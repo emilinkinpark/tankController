@@ -5,7 +5,7 @@ The codes are licensed under GNU LESSER GENERAL PUBLIC LICENSE
 *   More on the lincense at <https://www.gnu.org/licenses/lgpl-3.0.en.html>
 *   Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed.
 *   
-*   Acknowledgement: The project uses libraries used in Arduino IDE.
+*   Acknowledgement: The project uses Arduino libraries.
 *    
 *   The purpose of this project is to create a decentralised or independent controller for Glory Aquaculture Pvt. Ltd's 
 *   Prawn Intensive Farming Project. 
