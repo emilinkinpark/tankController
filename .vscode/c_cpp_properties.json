@@ -1,11 +1,15 @@
 {
     "configurations": [
         {
-            "name": "!!! WARNING !!! AUTO-GENERATED FILE, PLEASE DO NOT MODIFY IT AND USE https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags"
+            "name": "!!! WARNING !!! AUTO-GENERATED FILE, PLEASE DO NOT MODIFY IT AND USE https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags",
+            "includePath": [
+                "D:/Programs/Arduino/hardware/arduino/avr"
+            ]
         },
         {
             "name": "Win32",
             "includePath": [
+                "D:/Programs/Arduino/hardware/arduino/avr",
                 "C:/Users/emili/Documents/PlatformIO/Projects/tankController/include",
                 "C:/Users/emili/Documents/PlatformIO/Projects/tankController/src",
                 "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/config",
@@ -98,6 +102,7 @@
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
+                    "D:/Programs/Arduino/hardware/arduino/avr",
                     "C:/Users/emili/Documents/PlatformIO/Projects/tankController/include",
                     "C:/Users/emili/Documents/PlatformIO/Projects/tankController/src",
                     "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/config",
