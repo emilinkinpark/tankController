@@ -12,7 +12,6 @@
 *   Only MODBUS Holding Register (0x03) is implemented.
 */
 
-
 #include <Arduino.h>
 #define slaveId 0x05
 #define functionCode 0x03
@@ -149,7 +148,7 @@ void loop()
         buff[buffCount] = '\0';   // Null terminate the string
       }
     }
-    for (int index = 0; index < (dataLength * 2); index++)        // Sends Data Only
+    for (int index = 0; index < (dataLength * 2); index++) // Sends Data Only
     {
       delay(100);
       Serial.println(buff[index + 3], DEC);
