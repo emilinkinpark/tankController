@@ -6,8 +6,7 @@
 *   
 *   Acknowledgement: The project uses libraries used in Arduino IDE.
 *    
-*   The purpose of this project is to create a decentralised or independent controller for Glory Aquaculture Pvt. Ltd's 
-*   Prawn Intensive Farming Project. 
+*   The purpose of this project is to create a decentralised or independent controller for Glory Aquaculture Pvt. Ltd's Prawn Intensive Farming Project. 
 *   The MODBUSRTU communication protocol is implemented according to Modbus_over_serial_line_V1_02.pdf
 *   Only MODBUS Holding Register (0x03) is implemented.
 
@@ -20,16 +19,18 @@ Think of a way to store received data from the modbusRead function
 //#define functionCode 0x03
 #define startingAddress 0
 #define dataLength 3
+uint8_t buff[12];
 
 
 //int numberofLoops = 0;
-int buff[22];
-char inChar;
-byte buffCount = 0;
-int incomingByte = 0; //Reading Modbus
+
+
+
+//int incomingByte = 0; //Reading Modbus
 
 /* Table of CRC values for high-order byte */
-static const uint8_t table_crc_hi[] = {
+static const uint8_t table_crc_hi[] = 
+{
     0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0,
     0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41,
     0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0,
@@ -58,7 +59,8 @@ static const uint8_t table_crc_hi[] = {
     0x80, 0x41, 0x00, 0xC1, 0x81, 0x40};
 
 /* Table of CRC values for low-order byte */
-static const uint8_t table_crc_lo[] = {
+static const uint8_t table_crc_lo[] =
+{
     0x00, 0xC0, 0xC1, 0x01, 0xC3, 0x03, 0x02, 0xC2, 0xC6, 0x06,
     0x07, 0xC7, 0x05, 0xC5, 0xC4, 0x04, 0xCC, 0x0C, 0x0D, 0xCD,
     0x0F, 0xCF, 0xCE, 0x0E, 0x0A, 0xCA, 0xCB, 0x0B, 0xC9, 0x09,
@@ -91,7 +93,8 @@ static const uint8_t table_crc_lo[] = {
 
 
 
-static uint16_t crc16(uint8_t *buffer, uint16_t buffer_length){
+static uint16_t crc16(uint8_t *buffer, uint16_t buffer_length)
+{
   uint8_t crc_hi = 0xFF; /* high CRC byte initialized */
   uint8_t crc_lo = 0xFF; /* low CRC byte initialized */
   unsigned int i;        /* will index into CRC lookup */
@@ -109,8 +112,9 @@ static uint16_t crc16(uint8_t *buffer, uint16_t buffer_length){
 
 
 
-void modbusTransmit(uint8_t slave_addr,uint8_t starting_address, uint8_t length){
-  /*  Workign Process
+void modbusTransmit(uint8_t slave_addr,uint8_t starting_address, uint8_t length) // Modbus Transmit Function
+{
+  /*  Working Process
    *  Takes the slave address, starting address and datalength, and stores it into data_stream.
    *  Generates CRC
    *  Takes in the serial buffer from data_stream and transfer to slave over Serial2(ESP32 UART2)
@@ -136,12 +140,21 @@ void modbusTransmit(uint8_t slave_addr,uint8_t starting_address, uint8_t length)
   //Serial.println("Transmited");    // 
   }
 
-void modbusRead(){
-    while (Serial2.available())
+void modbusRead(uint8_t * buff)
+{
+  /* Working Process
+   * Waits for the serial buffer to be full
+   * Reads each data and stores it into a buffer array until the Counter meets it's condition
+   * The buffer array ignores Null string
+   * 
+  */
+    char inChar;
+    byte buffCount = 0;
+    uint8_t datalength = dataLength * 4;
+    //int buff[datalength]; 
+    while (Serial2.available())   //Wait until there is data to read
     {
-      delay(500); //delay to allow buffer to fill
-                  // Serial.println(Serial2.read());
-      if (buffCount < 21)
+      if (buffCount < datalength )
       {                           // One less than the size of the array
         inChar = Serial2.read();  // Read a character
         buff[buffCount] = inChar; // Store it
@@ -149,21 +162,42 @@ void modbusRead(){
         buff[buffCount] = '\0';   // Null terminate the string
       }
     }
-    for (int index = 0; index < (dataLength * 2); index++) // Sends Data Only
+    /*
+    for (int index = 0; index < datalength; index++) // Sends Data Only
     {
-      delay(100);
+
       Serial.println(buff[index + 3], DEC);
     }
-   // numberofLoops++; //Counting up numberofLoops
-  }
+    */
+ }
 
-
+/*Main Program Part*/
 void setup(){
-  Serial.begin(9600);  //TXD0 - used as serial buffer
+  Serial.begin(9600);  //TXD0 - used as serial decorder
   Serial2.begin(9600); //TXD2 - used for ModbusRTU
 
   modbusTransmit(slaveId, startingAddress, dataLength);
-  modbusRead();
+  modbusRead(buff);
+  //Serial.println("Starting to Transmit");
+  /*
+  for (int index = 0; index <= 5; index++) // Sends Data Only
+    {
+      Serial.println(buff[index+3], HEX);
+    }
+    Serial.println("Transmission End");
+    */
+    Serial.write("\n");
+
+    float salinity = buff[6];
+    Serial.write("salinity: ");
+    Serial.print(salinity/10);
+    Serial.write(" %o \n");
+
+
+    float temperature = buff[8];
+    Serial.write("Temperature: ");
+    Serial.print(temperature/10);
+    Serial.write(" °C \n");
   }
   
 
