@@ -2,7 +2,7 @@
 /* The codes are licensed under GNU LESSER GENERAL PUBLIC LICENSE
 *   Copyright © 2007 Free Software Foundation, Inc. <https://fsf.org/>
 *   More on the lincense at <https://www.gnu.org/licenses/lgpl-3.0.en.html>
-*   Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed.
+*   Everyone is permitted to copy and distribute verbatim copies of this license document, but changing is not allowed.
 *   
 *   Acknowledgement: The project uses libraries used in Arduino IDE.
 *    
@@ -10,19 +10,19 @@
 *   Prawn Intensive Farming Project. 
 *   The MODBUSRTU communication protocol is implemented according to Modbus_over_serial_line_V1_02.pdf
 *   Only MODBUS Holding Register (0x03) is implemented.
+
+Next Task
+Think of a way to store received data from the modbusRead function
 */
 
 #include <Arduino.h>
-#define slaveId 0x05
-#define functionCode 0x03
-#define startingAddress 1
+#define slaveId 5
+//#define functionCode 0x03
+#define startingAddress 0
 #define dataLength 3
 
-uint8_t starting_address[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10};
-uint8_t datalength[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10};
-uint8_t data_stream[] = {0x05, 0x03, 0x00, starting_address[startingAddress - 1], 0x00, datalength[dataLength]};
 
-int numberofLoops = 0;
+//int numberofLoops = 0;
 int buff[22];
 char inChar;
 byte buffCount = 0;
@@ -86,8 +86,12 @@ static const uint8_t table_crc_lo[] = {
     0x44, 0x84, 0x85, 0x45, 0x87, 0x47, 0x46, 0x86, 0x82, 0x42,
     0x43, 0x83, 0x41, 0x81, 0x80, 0x40};
 
-static uint16_t crc16(uint8_t *buffer, uint16_t buffer_length)
-{
+
+
+
+
+
+static uint16_t crc16(uint8_t *buffer, uint16_t buffer_length){
   uint8_t crc_hi = 0xFF; /* high CRC byte initialized */
   uint8_t crc_lo = 0xFF; /* low CRC byte initialized */
   unsigned int i;        /* will index into CRC lookup */
@@ -101,41 +105,38 @@ static uint16_t crc16(uint8_t *buffer, uint16_t buffer_length)
   }
 
   return (crc_hi << 8 | crc_lo);
-}
+  }
 
-void modbusTransmit()
-{
-  /* Workign Process
+
+
+void modbusTransmit(uint8_t slave_addr,uint8_t starting_address, uint8_t length){
+  /*  Workign Process
+   *  Takes the slave address, starting address and datalength, and stores it into data_stream.
    *  Generates CRC
    *  Takes in the serial buffer from data_stream and transfer to slave over Serial2(ESP32 UART2)
    *  CRC transmitted
    */
 
+  uint8_t str_address[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10};
+  uint8_t datalength[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10};
+  uint8_t data_stream[] = {slave_addr, 0x03, 0x00, str_address[starting_address], 0x00, datalength[length]};
+
+  delay(200); // delay stop mixing up sent data during flash
   uint8_t CRC = crc16(data_stream, 6); //Generating CRC
   for (int i = 0; i <= 5; i++)
   {
     Serial2.write(data_stream[i]); //Sending out the data
+    //Serial.println(data_stream[i]);  //Debugging
   }
 
   Serial2.write(CRC >> 4); // Shifting by 4 bits (2 byte) to get the LSB CRC
   Serial2.write(CRC);      // MSB
   delay(100);
-  Serial.flush();
-  //Serial.println("Transmited");    // Debugging
-}
+  //Serial.flush();
+  //Serial.println("Transmited");    // 
+  }
 
-void setup()
-{
-  Serial.begin(9600);  //TXD0 - used as serial buffer
-  Serial2.begin(9600); //TXD2 - used for ModbusRTU
-}
-
-void loop()
-{
-  if (numberofLoops <= 1)
-  {
-    modbusTransmit(); //Requesting data to Slave device
-
+void modbusRead(){
     while (Serial2.available())
     {
       delay(500); //delay to allow buffer to fill
@@ -153,10 +154,24 @@ void loop()
       delay(100);
       Serial.println(buff[index + 3], DEC);
     }
-    numberofLoops++; //Counting up numberofLoops
+   // numberofLoops++; //Counting up numberofLoops
   }
-  else
-  {
-    //Do nothing
+
+
+void setup(){
+  Serial.begin(9600);  //TXD0 - used as serial buffer
+  Serial2.begin(9600); //TXD2 - used for ModbusRTU
+
+  modbusTransmit(slaveId, startingAddress, dataLength);
+  modbusRead();
   }
+  
+
+void loop()
+{
+  
+    //Serial.println(data_stream[i]);
+  // Keep Spinning
+    
 }
+
