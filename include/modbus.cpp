@@ -81,15 +81,23 @@ static uint16_t crc16(uint8_t *buffer, uint16_t buffer_length)
     crc_hi = crc_lo ^ table_crc_hi[i];
     crc_lo = table_crc_lo[i];
   }
+  /*Debugging */
+  Serial.write("CRC_High: ");
+  Serial.println(crc_hi,HEX);
+  Serial.write("CRC_LO: ");
+  Serial.println(crc_lo,HEX);
+
 
   return (crc_hi << 8 | crc_lo);
+
+  
 
   }
   
 
 
 
-void modbusTransmit(uint8_t slave_addr,uint8_t upper_starting_address, uint8_t lower_starting_address, uint8_t upper_length, uint8_t lower_length) // Modbus Transmit Function
+void modbusTransmit(uint8_t slave_addr,uint8_t funccode, uint8_t upper_starting_address, uint8_t lower_starting_address, uint8_t upper_length, uint8_t lower_length) // Modbus Transmit Function
 {
   /*  Working Process
    *  Takes the slave address, starting address and datalength, and stores it into data_stream.
@@ -98,32 +106,27 @@ void modbusTransmit(uint8_t slave_addr,uint8_t upper_starting_address, uint8_t l
    *  CRC transmitted
    */
 
+  uint8_t function_code[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10};
   uint8_t str_address[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15,
                            0x16, 0x17, 0x18, 0x19, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x30, 0x31};
   uint8_t datalength[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10};
   
-                          //  0         1                   2                                   3                             4                             5     
-  uint8_t data_stream[] = {slave_addr, 0x03, str_address[upper_starting_address], str_address[lower_starting_address], datalength[upper_length], datalength[lower_length]};
-                          // 01         03                25                                    00                                00                          01            
+                          //    0               1                                2                                    3                                 4                       5     
+  uint8_t data_stream[] = {slave_addr, function_code[funccode], str_address[upper_starting_address], str_address[lower_starting_address], datalength[upper_length], datalength[lower_length]};
+                          //  01                03                               25                                   00                                00                      01            
 
   delay(200); // delay stop mixing up sent data during flash
-  uint8_t CRC = crc16(data_stream, 6); //Generating CRC
+  uint8_t CRC = crc16(data_stream, 6); //Generating CRC //Length Must be 6
   for (int i = 0; i <= 5; i++)
   {
     Serial2.write(data_stream[i]); //Sending out the data
     
-    Serial.println(data_stream[i]);  //Debugging
+    Serial.println(data_stream[i], HEX);  //Debugging
   }
 
   Serial2.write(CRC >> 4); // Shifting by 4 bits (2 byte) to get the LSB CRC
-  Serial.write(CRC >> 4); // Debugging
-  Serial2.write(CRC);      // MSB
-   
-   Serial.println()
-   Serial.println(CRC);     // Debugging
-  delay(100);
   
-  //Serial.println("Transmited");    // 
+   delay(100);
   }
 
 void modbusRead(int *buff, int length)
