@@ -7,7 +7,7 @@ static uint16_t crc16(uint8_t *buffer, uint16_t buffer_length); //Generates CRC 
 
 
 
-void modbusTransmit(uint8_t slave_addr,uint8_t starting_address, uint8_t length); // Modbus Transmit Function
+void modbusTransmit(uint8_t slave_addr,uint8_t upper_starting_address, uint8_t lower_starting_address, uint8_t upper_length, uint8_t lower_length) // Modbus Transmit Function
   /*  Working Process
    *  Takes the slave address, starting address and datalength, and stores it into data_stream.
    *  Generates CRC
