@@ -13,37 +13,28 @@
 
 #include <modbus.cpp>
 
-#define slaveId 5
-#define startingAddress 0
-#define dataLength 3
 
 
 void setup(){
   Serial.begin(9600);  //TXD0 - used as serial decorder
   Serial2.begin(9600); //TXD2 - used for ModbusRTU
 
-  modbusTransmit(slaveId, startingAddress, dataLength);
-  modbusRead(buff, dataLength);
   
-  float salinity = buff[6]/10.00;
-  float temperature = buff[8]/10.00;
-    
-
-  Serial.write("\n");
-  Serial.write("Salinity: ");
-  Serial.print(salinity);
-  Serial.write("‰");
-  Serial.write("\n");
-
-
-  Serial.write("\n");
-  Serial.write("Temperture: ");
-  Serial.print(temperature);
-  Serial.write("°C");
-  Serial.write("\n");
+  //modbusTransmit(0x01,03,25,00,00,01);
+  //(uint8_t slave_addr, function_code, uint8_t upper_starting_address, uint8_t lower_starting_address, uint8_t upper_length, uint8_t lower_length)
+  
+  for (size_t i = 0; i <= 2; i++)
+  {
+    modbusTransmit(0x01,03,26,00,00,04);        // Slave_ID, Function_Code, Upper Start_Address, Lower Start_Address, 
+                                                //Upper Number of registers, Lower Number of registers 
+     delay(1000);
+  }
+ 
 
 }
   
 void loop(){
-  //Do Nothing
+
+
+
 }
