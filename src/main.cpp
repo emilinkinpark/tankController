@@ -16,9 +16,14 @@
 
 
 void setup(){
-  Serial.begin(9600);  //TXD0 - used as serial decorder
-  Serial2.begin(9600); //TXD2 - used for ModbusRTU
-
+  Serial.begin(9600);                   //TXD0 - used as serial decorder
+  
+  // Serial1.begin(9600,SERIAL_8N1,4,2);   
+  /* Caution: Remove Pins before uploading firmware!!!!!
+   UART1 Rx Pin = GPIO 4 and TX Pin = GPIO 2                */
+   
+   Serial2.begin(9600);                  
+  /*  UART2 Rx Pin = GPIO 16 and TX Pin = GPIO 17           */
   
   //modbusTransmit(0x01,03,25,00,00,01);
   //(uint8_t slave_addr, function_code, uint8_t upper_starting_address, uint8_t lower_starting_address, uint8_t upper_length, uint8_t lower_length)
