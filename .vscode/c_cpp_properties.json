@@ -6,8 +6,8 @@
         {
             "name": "Win32",
             "includePath": [
-                "C:/Users/emili/Documents/PlatformIO/Projects/TankController/include",
-                "C:/Users/emili/Documents/PlatformIO/Projects/TankController/src",
+                "C:/Users/emili/Documents/PlatformIO/Projects/tankController/include",
+                "C:/Users/emili/Documents/PlatformIO/Projects/tankController/src",
                 "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/config",
                 "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/app_trace",
                 "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/app_update",
@@ -66,6 +66,7 @@
                 "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/fb_gfx",
                 "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/cores/esp32",
                 "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/variants/esp32",
+                "C:/Users/emili/.platformio/lib/Smoothed_ID5922/src",
                 "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/libraries/ArduinoOTA/src",
                 "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/libraries/AsyncUDP/src",
                 "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/libraries/AzureIoT/src",
@@ -98,8 +99,8 @@
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "C:/Users/emili/Documents/PlatformIO/Projects/TankController/include",
-                    "C:/Users/emili/Documents/PlatformIO/Projects/TankController/src",
+                    "C:/Users/emili/Documents/PlatformIO/Projects/tankController/include",
+                    "C:/Users/emili/Documents/PlatformIO/Projects/tankController/src",
                     "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/config",
                     "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/app_trace",
                     "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/app_update",
@@ -158,6 +159,7 @@
                     "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/fb_gfx",
                     "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/cores/esp32",
                     "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/variants/esp32",
+                    "C:/Users/emili/.platformio/lib/Smoothed_ID5922/src",
                     "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/libraries/ArduinoOTA/src",
                     "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/libraries/AsyncUDP/src",
                     "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/libraries/AzureIoT/src",
@@ -189,7 +191,7 @@
                 ]
             },
             "defines": [
-                "PLATFORMIO=40100",
+                "PLATFORMIO=40201",
                 "ARDUINO_ESP32_DEV",
                 "ESP32",
                 "ESP_PLATFORM",
@@ -205,7 +207,11 @@
             "intelliSenseMode": "clang-x64",
             "cStandard": "c99",
             "cppStandard": "c++11",
-            "compilerPath": "\"C:/Users/emili/.platformio/packages/toolchain-xtensa32/bin/xtensa-esp32-elf-gcc.exe\" -mlongcalls"
+            "compilerPath": "C:/Users/emili/.platformio/packages/toolchain-xtensa32/bin/xtensa-esp32-elf-gcc.exe",
+            "compilerArgs": [
+                "-mlongcalls",
+                ""
+            ]
         }
     ],
     "version": 4

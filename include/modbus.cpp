@@ -126,7 +126,7 @@ uint8_t modbusTransmit(uint8_t slave_addr,uint8_t funccode, uint8_t upper_starti
 
   Serial2.write(CRC >> 4); // Shifting by 4 bits (2 byte) to get the LSB CRC
   
-  return  lower_length
+  return  lower_length;
   }
 
 void modbusRead(int *buff, int length)

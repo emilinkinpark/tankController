@@ -25,16 +25,17 @@ void setup(){
   
   for (size_t i = 0; i <= 2; i++)
   {
-    modbusTransmit(0x01,03,26,00,00,04);        // Slave_ID, Function_Code, Upper Start_Address, Lower Start_Address, 
+    uint8_t length = modbusTransmit(0x01,03,26,00,00,04);        // Slave_ID, Function_Code, Upper Start_Address, Lower Start_Address, 
                                                 //Upper Number of registers, Lower Number of registers 
      delay(1000);
+     Serial.write("length: ");
+     Serial.println(length);
   }
  
 
 }
   
-void loop(){
-
-
-
+void loop()
+{
+  //
 }
