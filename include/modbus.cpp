@@ -101,13 +101,19 @@ uint8_t modbusTransmit(uint8_t const serialportnumber, uint8_t slave_addr, uint8
    *  CRC transmitted
    */
 
-  uint8_t function_code[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10};
-  uint8_t str_address[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15,
-                           0x16, 0x17, 0x18, 0x19, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x30, 0x31};
-  uint8_t datalength[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10};
+  
+  uint8_t hex[] = {
+                //  0     1     2     3     4     5     6     7     8      9    10    11    12    13    14    15
+                   0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+                //  16    17    18    19    20    21    22    23    24    25    26    27    28    29    30    31
+                   0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
+                //  32    33    34    35    36    37    38    39    40    41    42    43    44    45    46    47
+                   0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F 
+                   };
+  
 
   //    0               1                                2                                    3                                 4                       5
-  uint8_t data_stream[] = {slave_addr, function_code[funccode], str_address[upper_starting_address], str_address[lower_starting_address], datalength[upper_length], datalength[lower_length]};
+  uint8_t data_stream[] = {slave_addr, hex[funccode], hex[upper_starting_address], hex[lower_starting_address], hex[upper_length], datalength[lower_length]};
   //  01                03                               25                                   00                                00                      01
   delay(200);                           // delay stop mixing up sent data during flash
   uint16_t CRC = crc16(data_stream, 6); //Generating CRC //Length Must be 6
@@ -195,14 +201,6 @@ void modbusRead(int *buff, int temp_length)
       Serial.println(inChar, HEX);
       /*Debugging End*/
     }
-    if (buffCount == datalength)
-    {
-      Serial.println("Serial Read Loop End"); //Debugging
-      break;
-    }
-    else
-    {
-      Serial.println("Breaking Loop to reset"); //Debugging
-    }
+   
   }
 }
