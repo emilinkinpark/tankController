@@ -131,7 +131,7 @@ uint8_t modbusTransmit(uint8_t const serialportnumber, uint8_t slave_addr, uint8
     for (int i = 0; i <= 5; i++)
     {
       Serial1.write(data_stream[i]); //Sending out the data
-      delay(50);
+      delay(10);
 
     }
     Serial.println("Case 2");
@@ -141,7 +141,7 @@ uint8_t modbusTransmit(uint8_t const serialportnumber, uint8_t slave_addr, uint8
     for (int i = 0; i <= 5; i++)
     {
       Serial2.write(data_stream[i]); //Sending out the data
-      delay(50);
+      //delay(50);
       Serial.println(data_stream[i],HEX);
     }
     Serial.println("Case 3");
@@ -152,8 +152,8 @@ uint8_t modbusTransmit(uint8_t const serialportnumber, uint8_t slave_addr, uint8
     break;
   }
 
-  Serial2.write(CRC);
-  //Serial2.write(CRC); //  Sending Lower CRC bits
+  Serial2.write(CRC>>8);  //Sending Upper CRC bits i.e High bits
+  Serial2.write(CRC);     //Sending Lower CRC bits
 
   /* CRC Debugging Start */
   Serial.println(CRC, HEX);
