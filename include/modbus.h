@@ -5,10 +5,22 @@
 
 static uint16_t crc16(uint8_t *buffer, uint16_t buffer_length); //Generates CRC based on Datastream 
 
+void serialportchange(int const serialnumber, int *data)
+{
+  /*
+  Subroutine to sendout serial port data in software
+    Port    = serialnumber
+    Serial  = 1
+    Serial1 = 2
+    Serial2 = 3
+  */
+}
+
 
 
 void modbusTransmit(uint8_t slave_addr,uint8_t upper_starting_address, uint8_t lower_starting_address, uint8_t upper_length, uint8_t lower_length) // Modbus Transmit Function
   /*  Working Process
+   *  Takes the serial port number to define the serial port like 1 - Serial, 2 - Serial1 and 3 - Serial2 
    *  Takes the slave address, starting address and datalength, and stores it into data_stream.
    *  Generates CRC
    *  Takes in the serial buffer from data_stream and transfer to slave over Serial2(ESP32 UART2)

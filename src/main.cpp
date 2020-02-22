@@ -10,33 +10,39 @@
 *   The MODBUSRTU communication protocol is implemented according to Modbus_over_serial_line_V1_02.pdf
 *   Only MODBUS Holding Register (0x03) is implemented.
 */
-
+#include <modbus.h>
 #include <modbus.cpp>
+int o2[20];
+uint8_t length = 0;
 
-
-
-void setup(){
+void setup()
+{
   Serial.begin(9600);                   //TXD0 - used as serial decorder
   
   // Serial1.begin(9600,SERIAL_8N1,4,2);   
-  /* Caution: Remove Pins before uploading firmware!!!!!
-   UART1 Rx Pin = GPIO 4 and TX Pin = GPIO 2                */
+  /* UART1 Rx Pin = GPIO 4 and TX Pin = GPIO 2  
+  Caution: Remove Pins before uploading firmware!!!!! */
    
-   Serial2.begin(9600);                  
-  /*  UART2 Rx Pin = GPIO 16 and TX Pin = GPIO 17           */
+   Serial2.begin(9600);                                              /*  UART2 Rx Pin = GPIO 16 and TX Pin = GPIO 17           */
   
-  //modbusTransmit(0x01,03,25,00,00,01);
-  //(uint8_t slave_addr, function_code, uint8_t upper_starting_address, uint8_t lower_starting_address, uint8_t upper_length, uint8_t lower_length)
-  
-  for (size_t i = 0; i <= 2; i++)
-  {
-    uint8_t length = modbusTransmit(0x01,03,26,00,00,04);        // Slave_ID, Function_Code, Upper Start_Address, Lower Start_Address, 
-                                                //Upper Number of registers, Lower Number of registers 
+    length = modbusTransmit(3, 0x01,03,26,00,00,04);                // Serial Port Number, Slave_ID, Function_Code, Upper Start_Address, Lower Start_Address, 
+                                                                    // Upper Number of registers, Lower Number of registers 
      delay(1000);
-     Serial.write("length: ");
-     Serial.println(length);
-  }
- 
+      Serial.write("length: ");
+      Serial.println(length);
+      delay(5);
+  // }
+  
+  modbusRead(o2,length);
+      if (o2[1] == 0x01)
+      {
+          Serial.println("Slave ID matched");
+      }
+      else
+      {
+          Serial.println("Slave ID mismatch");
+      }
+  
 
 }
   
