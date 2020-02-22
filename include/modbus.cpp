@@ -94,21 +94,21 @@ static uint16_t crc16(uint8_t *buffer, uint16_t buffer_length)
 uint8_t modbusTransmit(uint8_t const serialportnumber, uint8_t slave_addr, uint8_t funccode, uint8_t upper_starting_address, uint8_t lower_starting_address, uint8_t upper_length, uint8_t lower_length) // Modbus Transmit Function
 {
   /*  Working Process
-   *  Takes the serial port number to define the serial port like 1 - Serial, 2 - Serial1 and 3 - Serial2 
+   *  Define the serial port number to define the serial port like 1 - Serial, 2 - Serial1 and 3 - Serial2 
    *  Takes the slave address, starting address and datalength, and stores it into data_stream.
    *  Generates CRC
    *  Takes in the serial buffer from data_stream and transfer to slave over Serial2(ESP32 UART2)
    *  CRC transmitted
    */
-  
+
   uint8_t function_code[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10};
   uint8_t str_address[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15,
                            0x16, 0x17, 0x18, 0x19, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x30, 0x31};
   uint8_t datalength[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10};
 
-                          //    0               1                                2                                    3                                 4                       5
+  //    0               1                                2                                    3                                 4                       5
   uint8_t data_stream[] = {slave_addr, function_code[funccode], str_address[upper_starting_address], str_address[lower_starting_address], datalength[upper_length], datalength[lower_length]};
-                          //  01                03                               25                                   00                                00                      01
+  //  01                03                               25                                   00                                00                      01
   delay(200);                           // delay stop mixing up sent data during flash
   uint16_t CRC = crc16(data_stream, 6); //Generating CRC //Length Must be 6
 
@@ -132,7 +132,6 @@ uint8_t modbusTransmit(uint8_t const serialportnumber, uint8_t slave_addr, uint8
     {
       Serial1.write(data_stream[i]); //Sending out the data
       delay(10);
-
     }
     Serial.println("Case 2");
     break;
@@ -142,18 +141,18 @@ uint8_t modbusTransmit(uint8_t const serialportnumber, uint8_t slave_addr, uint8
     {
       Serial2.write(data_stream[i]); //Sending out the data
       //delay(50);
-      Serial.println(data_stream[i],HEX);
+      Serial.println(data_stream[i], HEX);
     }
     Serial.println("Case 3");
     break;
 
   default:
-    Serial.println("Port Not declared");
+    Serial.println("Case Not reached");
     break;
   }
 
-  Serial2.write(CRC>>8);  //Sending Upper CRC bits i.e High bits
-  Serial2.write(CRC);     //Sending Lower CRC bits
+  Serial2.write(CRC >> 8); //Sending Upper CRC bits i.e High bits
+  Serial2.write(CRC);      //Sending Lower CRC bits
 
   /* CRC Debugging Start */
   Serial.println(CRC, HEX);
@@ -164,7 +163,8 @@ uint8_t modbusTransmit(uint8_t const serialportnumber, uint8_t slave_addr, uint8
 
 void modbusRead(int *buff, int temp_length)
 {
-  /* Working Process
+  /* Working Process:
+   * Define the serial port number to define the serial port like 1 - Serial, 2 - Serial1 and 3 - Serial2 
    * Waits for the serial buffer to be full
    * Reads each data and stores it into a buffer array until the Counter meets it's condition
    * The buffer array ignores Null string
@@ -173,11 +173,15 @@ void modbusRead(int *buff, int temp_length)
   char inChar;
   byte buffCount = 0;
   uint8_t datalength = (temp_length * 2) + 1;
-  Serial.println("Serial Read start"); //Debugging
-  //Serial.println(Serial2.available()); //Debugging
+
+  /* Debugging Start */
+  //Serial.println("Serial Read start");
+  //Serial.println(Serial2.available());
+  /* Debugging End */
+
   while (Serial2.available()) //Wait until there is data to read
   {
-    if (buffCount < datalength) // Store each data into the buffer
+    if (buffCount <= datalength) // Store each data into the buffer
     {                           // One less than the size of the array
       inChar = Serial2.read();  // Read a character
       buff[buffCount] = inChar; // Store it

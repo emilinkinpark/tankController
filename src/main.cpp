@@ -12,31 +12,34 @@
 */
 #include <modbus.h>
 #include <modbus.cpp>
-int o2[20];
+int o2[30];
 uint8_t length = 0;
 
 void setup()
 {
-  Serial.begin(9600);                   //TXD0 - used as serial decorder
+  Serial.begin(9600);                                                 //TXD0 - used as serial decorder
   
   // Serial1.begin(9600,SERIAL_8N1,4,2);   
   /* UART1 Rx Pin = GPIO 4 and TX Pin = GPIO 2  
   Caution: Remove Pins before uploading firmware!!!!! */
    
    Serial2.begin(9600);                                              /*  UART2 Rx Pin = GPIO 16 and TX Pin = GPIO 17           */
-  
-    length = modbusTransmit(3, 0x01,03,26,00,00,04);                // Serial Port Number, Slave_ID, Function_Code, Upper Start_Address, Lower Start_Address, 
+
+    length = modbusTransmit(3,0x0E,03,9,00,00,07);                  // Serial Port Number, Slave_ID, Function_Code, Upper Start_Address, Lower Start_Address, 
                                                                     // Upper Number of registers, Lower Number of registers 
      delay(1000);
       Serial.write("length: ");
       Serial.println(length);
       delay(5);
-  // }
+  
+
+
   
   modbusRead(o2,length);
-      if (o2[1] == 0x01)
+       if (o2[0] == 0x0E)
       {
           Serial.println("Slave ID matched");
+          
       }
       else
       {
@@ -48,5 +51,6 @@ void setup()
   
 void loop()
 {
-  //
+  // Serial2.write(0x01);
+  // delay(1000);
 }
