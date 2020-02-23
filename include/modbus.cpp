@@ -5,8 +5,8 @@
 #include <Arduino.h>
 
 /* Dependent Variables */
-int buff[20]; //Stores Serial Read Data
 
+//char buff[20]; //Stores Serial Read Data
 /* Table of CRC values for top-order byte */
 static const uint8_t table_crc_hi[] =
     {
@@ -91,7 +91,7 @@ static uint16_t crc16(uint8_t *buffer, uint16_t buffer_length)
   return (crc_hi << 8 | crc_lo);
 }
 
-uint8_t modbusTransmit(uint8_t const serialportnumber, uint8_t slave_addr, uint8_t funccode, uint8_t upper_starting_address, uint8_t lower_starting_address, uint8_t upper_length, uint8_t lower_length) // Modbus Transmit Function
+void modbusTransmit(uint8_t const serialportnumber, uint8_t slave_addr, uint8_t funccode, uint8_t upper_starting_address, uint8_t lower_starting_address, uint8_t upper_length, uint8_t lower_length) // Modbus Transmit Function
 {
   /*  Working Process
    *  Define the serial port number to define the serial port like 1 - Serial, 2 - Serial1 and 3 - Serial2 
@@ -102,23 +102,24 @@ uint8_t modbusTransmit(uint8_t const serialportnumber, uint8_t slave_addr, uint8
    */
 
   
-  uint8_t hex[] = {
-                //  0     1     2     3     4     5     6     7     8      9    10    11    12    13    14    15
-                   0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
-                //  16    17    18    19    20    21    22    23    24    25    26    27    28    29    30    31
-                   0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
-                //  32    33    34    35    36    37    38    39    40    41    42    43    44    45    46    47
-                   0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F 
-                   };
+  // uint8_t hex[] = {
+  //               //  0     1     2     3     4     5     6     7     8      9    10    11    12    13    14    15
+  //                  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+  //               //  16    17    18    19    20    21    22    23    24    25    26    27    28    29    30    31
+  //                  0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
+  //               //  32    33    34    35    36    37    38    39    40    41    42    43    44    45    46    47
+  //                  0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F 
+  //                  };
   
 
   //    0               1                                2                                    3                                 4                       5
-  uint8_t data_stream[] = {slave_addr, hex[funccode], hex[upper_starting_address], hex[lower_starting_address], hex[upper_length], datalength[lower_length]};
+  //uint8_t data_stream[] = {slave_addr, hex[funccode], hex[upper_starting_address], hex[lower_starting_address], hex[upper_length], hex[lower_length]};
+  uint8_t data_stream[] = {slave_addr, funccode, upper_starting_address, lower_starting_address, upper_length, lower_length};
   //  01                03                               25                                   00                                00                      01
   delay(200);                           // delay stop mixing up sent data during flash
   uint16_t CRC = crc16(data_stream, 6); //Generating CRC //Length Must be 6
 
-  Serial.println("Transmitting Start"); //Debugging
+ // Serial.println("Transmitting Start"); //Debugging
 
   switch (serialportnumber)
   {
@@ -129,7 +130,7 @@ uint8_t modbusTransmit(uint8_t const serialportnumber, uint8_t slave_addr, uint8
       Serial.println(data_stream[i]); //Sending out the data
       delay(50);
     }
-    Serial.println("Case 1");
+    //Serial.println("Case 1");
     break;
 
   case 2:
@@ -139,7 +140,7 @@ uint8_t modbusTransmit(uint8_t const serialportnumber, uint8_t slave_addr, uint8
       Serial1.write(data_stream[i]); //Sending out the data
       delay(10);
     }
-    Serial.println("Case 2");
+    //Serial.println("Case 2");
     break;
   case 3:
 
@@ -147,9 +148,9 @@ uint8_t modbusTransmit(uint8_t const serialportnumber, uint8_t slave_addr, uint8
     {
       Serial2.write(data_stream[i]); //Sending out the data
       //delay(50);
-      Serial.println(data_stream[i], HEX);
+      //Serial.println(data_stream[i], HEX);
     }
-    Serial.println("Case 3");
+    //Serial.println("Case 3");
     break;
 
   default:
@@ -160,14 +161,14 @@ uint8_t modbusTransmit(uint8_t const serialportnumber, uint8_t slave_addr, uint8
   Serial2.write(CRC >> 8); //Sending Upper CRC bits i.e High bits
   Serial2.write(CRC);      //Sending Lower CRC bits
 
-  /* CRC Debugging Start */
-  Serial.println(CRC, HEX);
-  Serial.println("Transmitting End");
-  /* CRC Debugging End*/
-  return lower_length;
+  // /* CRC Debugging Start */
+  // Serial.println(CRC, HEX);
+  // Serial.println("Transmitting End");
+  // /* CRC Debugging End*/
+  //return lower_length;
 }
 
-void modbusRead(int *buff, int temp_length)
+void modbusRead(uint8_t SlaveID, int *buff)
 {
   /* Working Process:
    * Define the serial port number to define the serial port like 1 - Serial, 2 - Serial1 and 3 - Serial2 
@@ -176,31 +177,45 @@ void modbusRead(int *buff, int temp_length)
    * The buffer array ignores Null string
   */
 
-  char inChar;
+  char inChar = 0;
   byte buffCount = 0;
-  uint8_t datalength = (temp_length * 2) + 1;
+  // byte loopcounter = 0;
+  //uint8_t datalength = temp_length;
 
   /* Debugging Start */
   //Serial.println("Serial Read start");
   //Serial.println(Serial2.available());
   /* Debugging End */
 
-  while (Serial2.available()) //Wait until there is data to read
+  
+  while (Serial2.available())
   {
-    if (buffCount <= datalength) // Store each data into the buffer
-    {                           // One less than the size of the array
-      inChar = Serial2.read();  // Read a character
-      buff[buffCount] = inChar; // Store it
-      buffCount++;              // Increment where to write next
-      buff[buffCount] = '\0';   // Null terminate the string
-
-      /*Debugging Start*/
-      Serial.write("Buff Count: ");
-      Serial.println(buffCount, HEX);
-      Serial.write("Read Data: ");
-      Serial.println(inChar, HEX);
-      /*Debugging End*/
+    inChar = Serial.read();
+    while (inChar == SlaveID) // Matching Slave ID
+    {
+      inChar = Serial.read();
+      Serial.println("Still Trying to find that bludger!");
     }
-   
+     Serial.println("Found my Slave ID");
+    while (buffCount <= 8)
+    {
+      Serial.write("Buff Count: ");
+      Serial.println(buffCount);
+      inChar = Serial2.read();
+      Serial.println(inChar, HEX);
+      buff[buffCount] = inChar;
+      buffCount++;
+    }
+      if (buffCount == 9)           // Must be one more than buffCount
+      {
+        Serial.println("End of Loop");
+        break;
+      }
+      else
+      {
+        break;
+        //Serial.println("Continuing Loop");
+      }
+    
   }
 }
