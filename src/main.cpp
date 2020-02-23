@@ -17,8 +17,8 @@
 #define slaveID 0x0E
 
 
-int Temp[9]; //O2 buffer length must have a size of 12 bytes
-int DOPerc[7];
+int o2[12]; //O2 buffer length must have a size of 12 bytes
+//int DOPerc[9];
 
 void setup()
 {
@@ -29,99 +29,52 @@ void setup()
   Caution: Remove Pins before uploading firmware!!!!! */
 
   Serial2.begin(9600); /*  UART2 Rx Pin = GPIO 16 and TX Pin = GPIO 17           */
+  
 
-  //   memset(o2, 0, sizeof(o2)); // Clears the array of old data;
 }
 
 void loop()
 {
+  memset(o2,0,sizeof(o2));
+  //memset(Temp,0,sizeof(DOPerc));
 
-  //Start Measurement
-  // modbusTransmit(3, 0x0E, 0x03, 0x25, 0x00, 0x00, 0x01);
-  // delay(2000); // Wait 2 seconds
+  
+  
+  // Start Measurement
+   modbusTransmit(3, 0x0E, 0x03, 0x25, 0x00, 0x00, 0x01);
+   delay(2000);
+
+
+  modbusTransmit(3, 0x0E, 0x03, 0x26, 0x00, 0x00, 0x04);
+  for (int i=0; i<=10; i++)
+  {
+      modbusRead(0x0E,o2);
+      delay(500);
+  }
+  
+
+  float Conv_Temp = floatTOdecimal(o2[3],o2[4],o2[5],o2[6]);
+  Serial.write("Temperature: ");
+  Serial.println(Conv_Temp);
+
+  float Conv_DOPerc = floatTOdecimal(o2[7],o2[8],o2[9],o2[10]);
+  Serial.write("DO Percentage: ");
+  Serial.println(Conv_DOPerc*100);
+
+
+  // Stop Measurement
+   modbusTransmit(3, 0x0E, 0x03, 0x2E, 0x00, 0x00, 0x01);
+   delay(100);
+
 
   //Request Temp
-  modbusTransmit(3, 0x0E, 0x03, 0x08, 0x00, 0x00, 0x02);
-  
-  modbusRead(0x0E,Temp);
-  
-  
-  
-  
-  
-  
-  
-  // byte buffCount = 0;
-  // char inChar = 0;
-  // while (Serial2.available())
-  // {
-    
+  // modbusTransmit(3, 0x0E, 0x03, 0x08, 0x00, 0x00, 0x02);
+  // modbusRead(0x0E,Temp);
 
-  //   while (inChar == 0x0E) // Matching Slave ID
-  //   {
-  //     inChar = Serial.read();
-  //     Serial.println("Still Trying to find that bludger!");
-  //   }
-  //    Serial.println("Found my Slave");
-  //   while (buffCount <= 8)
-  //   {
-  //     Serial.write("Buff Count: ");
-  //     Serial.println(buffCount);
-  //     inChar = Serial2.read();
-  //     Serial.println(inChar, HEX);
-  //     buff[buffCount] = inChar;
-  //     buffCount++;
-  //   }
-  //     if (buffCount == 9)           // Must be one more than buffCount
-  //     {
-  //       Serial.println("End of Loop");
-  //       break;
-  //     }
-  //     else
-  //     {
-  //       break;
-  //       //Serial.println("Continuing Loop");
-  //     }
-    
-  // }
-
-  // float Conv_Temp = floatTOdecimal(buff[3],buff[4],buff[5],buff[6]);
-  // Serial.write("Temperature: ");
-  // Serial.println(Conv_Temp);
-
-  // buff[buffCount] = '\0'; // Null terminate the string
-  Serial.println("End of Main Loop");
-
-  // for (int i=0;i<=6;i++){
-  //   Serial.println(buff[i],HEX);
-  // }
-  // Serial.println("Printing Buffer End");
-
-  
-  delay(1000);
+  // //Request Percentage DO
+  // modbusTransmit(3, 0x0E, 0x03,0x12,0x04,0x00,0x02);
+  // modbusRead(0x0E,DOPerc);
   // //End of Void Loop();
+  delay(1000);
 }
 
-//modbusRead(Temp, 7); // Save data to Temp buffer
-//Request Percentage DO
-// modbusTransmit(3,0x0E,0x03,0x12,0x04,0x00,0x02);
-// modbusRead(DOPerc, 8); // Save data to DOPerc buffer
-
-//Stop Measurement
-//modbusTransmit(3, 0x0E, 0x03, 0x2E, 0x00, 0x00, 0x01);
-
-// float Conv_Temp = floatTOdecimal(Temp[3],Temp[4],Temp[5],Temp[6]);
-// Serial.write("Temperature: ");
-// Serial.println(Conv_Temp);
-
-// Serial.println("Buffer Read");
-// for (int i=0; i<=8;i++)
-// {
-//   Serial.println(Temp[i],HEX);
-// }
-
-// float Conv_DOperc = floatTOdecimal(DOPerc[3], DOPerc[4], DOPerc[5], DOPerc[6]);
-// Serial.write("Percentage DO: ");
-// Serial.println(Conv_DOperc);
-
-//delay(5000);
