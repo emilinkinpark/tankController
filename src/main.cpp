@@ -48,7 +48,7 @@ void loop()
   modbusTransmit(3, 0x0E, 0x03, 0x26, 0x00, 0x00, 0x04);
   for (int i=0; i<=10; i++)
   {
-      modbusRead(0x0E,o2);
+      modbusRead(3,0x0E,o2);
       delay(500);
   }
   
@@ -61,6 +61,9 @@ void loop()
   Serial.write("DO Percentage: ");
   Serial.println(Conv_DOPerc*100);
 
+  float DOmgl = domglcalc(Conv_Temp,Conv_DOPerc);
+  Serial.write("DO mg/L: ");
+  Serial.println(DOmgl);
 
   // Stop Measurement
    modbusTransmit(3, 0x0E, 0x03, 0x2E, 0x00, 0x00, 0x01);
