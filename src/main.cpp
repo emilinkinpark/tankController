@@ -15,6 +15,7 @@
 #include "conversions.cpp"
 
 #define O2_slaveID 0x0E
+#define O2_slaveID_DEC 14
 
 int o2[13]; //O2 buffer length must have a size of 12 bytes
 //int DOPerc[9];
@@ -43,7 +44,7 @@ void loop()
   modbusTransmit(3, O2_slaveID, 0x03, 0x26, 0x00, 0x00, 0x04);
   for (int i = 0; i <= 5; i++)
   {
-    modbusRead(3, O2_slaveID, o2);
+    modbusRead(3, O2_slaveID_DEC, 13, o2);
     delay(500);
   }
 
@@ -71,6 +72,19 @@ void loop()
   modbusTransmit(3, O2_slaveID, 0x03, 0x2E, 0x00, 0x00, 0x01);
   serial_flush_buffer(3); //Cleaning Response
   delay(100);
+
+
+  //Modbus Transmit to MOXA
+
+  /* Listens to Request from MOXA
+  * Matches the slaveID and CRC Check
+  */
+
+
+
+
+
+
 
   //Request Temp
   // modbusTransmit(3, 0x0E, 0x03, 0x08, 0x00, 0x00, 0x02);
