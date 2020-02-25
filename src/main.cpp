@@ -14,10 +14,9 @@
 #include "modbus.cpp"
 #include "conversions.cpp"
 
-#define slaveID 0x0E
+#define O2_slaveID 0x0E
 
-
-int o2[12]; //O2 buffer length must have a size of 12 bytes
+int o2[13]; //O2 buffer length must have a size of 12 bytes
 //int DOPerc[9];
 
 void setup()
@@ -29,46 +28,49 @@ void setup()
   Caution: Remove Pins before uploading firmware!!!!! */
 
   Serial2.begin(9600); /*  UART2 Rx Pin = GPIO 16 and TX Pin = GPIO 17           */
-  
-
 }
 
 void loop()
 {
-  memset(o2,0,sizeof(o2));
+  memset(o2, 0, sizeof(o2));
   //memset(Temp,0,sizeof(DOPerc));
 
-  
-  
   // Start Measurement
-   modbusTransmit(3, 0x0E, 0x03, 0x25, 0x00, 0x00, 0x01);
-   delay(2000);
+  modbusTransmit(3, O2_slaveID, 0x03, 0x25, 0x00, 0x00, 0x01);
+  delay(2000);
+  serial_flush_buffer(3);     //Cleaning Response
 
-
-  modbusTransmit(3, 0x0E, 0x03, 0x26, 0x00, 0x00, 0x04);
-  for (int i=0; i<=10; i++)
+  modbusTransmit(3, O2_slaveID, 0x03, 0x26, 0x00, 0x00, 0x04);
+  for (int i = 0; i <= 5; i++)
   {
-      modbusRead(3,0x0E,o2);
-      delay(500);
+    modbusRead(3, O2_slaveID, o2);
+    delay(500);
   }
-  
 
-  float Conv_Temp = floatTOdecimal(o2[3],o2[4],o2[5],o2[6]);
-  Serial.write("Temperature: ");
-  Serial.println(Conv_Temp);
+  if (o2[0] != 14)                                            //Slave ID Check
+  {
+    Serial.println("Slave ID not matched Transmission Halt!");
+    Serial.println(o2[0], HEX);
+  }
+  else
+  {
+    float Conv_Temp = floatTOdecimal(o2[3], o2[4], o2[5], o2[6]);
+    Serial.write("Temperature: ");
+    Serial.println(Conv_Temp);
 
-  float Conv_DOPerc = floatTOdecimal(o2[7],o2[8],o2[9],o2[10]);
-  Serial.write("DO Percentage: ");
-  Serial.println(Conv_DOPerc*100);
+    float Conv_DOPerc = floatTOdecimal(o2[7], o2[8], o2[9], o2[10]);
+    Serial.write("DO Percentage: ");
+    Serial.println(Conv_DOPerc * 100);
 
-  float DOmgl = domglcalc(Conv_Temp,Conv_DOPerc);
-  Serial.write("DO mg/L: ");
-  Serial.println(DOmgl);
+    float DOmgl = domglcalc(Conv_Temp, Conv_DOPerc);
+    Serial.write("DO mg/L: ");
+    Serial.println(DOmgl);
+  }
 
   // Stop Measurement
-   modbusTransmit(3, 0x0E, 0x03, 0x2E, 0x00, 0x00, 0x01);
-   delay(100);
-
+  modbusTransmit(3, O2_slaveID, 0x03, 0x2E, 0x00, 0x00, 0x01);
+  serial_flush_buffer(3); //Cleaning Response
+  delay(100);
 
   //Request Temp
   // modbusTransmit(3, 0x0E, 0x03, 0x08, 0x00, 0x00, 0x02);
@@ -80,4 +82,3 @@ void loop()
   // //End of Void Loop();
   delay(1000);
 }
-

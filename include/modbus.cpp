@@ -91,6 +91,29 @@ static uint16_t crc16(uint8_t *buffer, uint16_t buffer_length)
   return (crc_hi << 8 | crc_lo);
 }
 
+void serial_flush_buffer(uint8_t serialportnumber)
+{
+  switch (serialportnumber)
+  {
+  case 1:
+    while (Serial.read() >= 0)
+    {
+      ; // do
+    }
+
+  case 2:
+    while (Serial1.read() >= 0)
+    {
+      ; // do
+    }
+  case 3:
+    while (Serial2.read() >= 0)
+    {
+      ; // do
+    }
+  }
+}
+
 void modbusTransmit(uint8_t const serialportnumber, uint8_t slave_addr, uint8_t funccode, uint8_t upper_starting_address, uint8_t lower_starting_address, uint8_t upper_length, uint8_t lower_length) // Modbus Transmit Function
 {
   /*  Working Process
@@ -269,25 +292,28 @@ void modbusRead(uint8_t serialportnumber, char SlaveID, int *buff)
 
   case 3:
     //Serial.println("Case 3");
+
     while (Serial2.available())
     {
-      while (buffCount <= 12)
+      while (buffCount <= 13)
       {
-        //Serial.write("Buff Count: "); Serial.println(buffCount);        //Debugging
+
         inChar = Serial2.read();
-        //Serial.println(inChar, HEX);        //Debugging
+        //Serial.write("Buff Count: "); Serial.println(buffCount); Serial.println(inChar, HEX); //Debugging buffCount and Read Data
         buff[buffCount] = inChar;
+
         buffCount++;
 
-        if (buff[0] != SlaveID) // Matching Slave ID
+        if (buff[0] != 14) // Matching Slave ID
         {
-          //Serial.println("Salve ID Matched");   // Send out Error Code to PLC
+          //Serial.println("Salve ID Not Matched");
           //Serial.println(buff[0],HEX);
+          buffCount = 0;
           break;
         }
         else
         {
-          //Serial.println("Salve ID Not Found");
+          //Serial.println("Salve ID Found");
           //Serial.println(buff[0],HEX);
           continue;
         }
@@ -310,42 +336,4 @@ void modbusRead(uint8_t serialportnumber, char SlaveID, int *buff)
     //End of Switch
   }
 
-  // while (Serial2.available())
-  // {
-
-  //   while (buffCount <= 12)
-  //   {
-  //     //Serial.write("Buff Count: "); Serial.println(buffCount);        //Debugging
-  //     inChar = Serial2.read();
-  //     //Serial.println(inChar, HEX);        //Debugging
-  //     buff[buffCount] = inChar;
-  //     buffCount++;
-
-  //     if (buff[0] != SlaveID) // Matching Slave ID
-  //     {
-  //       //Serial.println("Salve ID Matched");   // Send out Error Code to PLC
-  //       //Serial.println(buff[0],HEX);
-  //       break;
-  //     }
-  //     else
-  //     {
-  //       //Serial.println("Salve ID Not Found");
-  //       //Serial.println(buff[0],HEX);
-  //       continue;
-  //     }
-  //   }
-
-  //   if (buffCount == 13)
-  //   {
-  //     //Serial.println("End of Loop");
-  //     break;
-  //   }
-  //   else
-  //   {
-  //     break;
-  //     //Serial.println("Continuing Loop");
-  //   }
-  //   //Serial.println("End of Loop");    //Debugging
-  // }
-  // //Serial.println("Read Complete");    //Debugging
 }
