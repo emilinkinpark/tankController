@@ -33,19 +33,19 @@ float domglcalc(float t, float DOperc) //Temp in deg C, DOperc in %
     float T = 273.15 + t; //Temperature in Kelvin
 
     /*Constants*/
-    float const S = 11.00;//10.0;         //Salinity Taken 10 as constant
-    float const atm_pressure = 101.325; //Atmospheric Pressure in kPa
+    float const S = 11.00;                       //10.0;         //Salinity Taken 10 as constant
+    float const atm_pressure = 101.325;          //Atmospheric Pressure in kPa
     float const pressure = 16.78 + atm_pressure; //pressure in kPa; const pressure in salt water at 1.67m depth; more at https://docs.bluerobotics.com/calc/pressure-depth/
     float const A1 = -173.4292;
     float const A2 = 249.6339;
     float const A3 = 143.3483;
     float const A4 = -21.8492;
-    float const tmp_B1 = -0.033096;//-0.001700;
+    float const tmp_B1 = -0.033096; //-0.001700;
     float const B2 = 0.014259;
     float const B3 = -0.001700;
 
     //     X1' =  Al + A2*(100/T)    + A3 ln T/100   +     A4 T/100       + S*[B1 + B2 T/100 + B3 (T/100)^2]; Weiss Equation more at https://water.usgs.gov/admin/memo/QW/qw81.11.html
-    double X1prime = A1 + (A2 * (100 / T)) + (A3 * log(T / 100)) + (A4 * (T / 100)) + S * (tmp_B1 + B2*(T / 100) + B3 * pow((T / 100), 2));
+    double X1prime = A1 + (A2 * (100 / T)) + (A3 * log(T / 100)) + (A4 * (T / 100)) + S * (tmp_B1 + B2 * (T / 100) + B3 * pow((T / 100), 2));
     double X1 = exp(X1prime);
 
     double uprime = 8.10765 - (1750.286 / T);
@@ -59,4 +59,13 @@ float domglcalc(float t, float DOperc) //Temp in deg C, DOperc in %
     double DOmgL = DOperc * X1 * X2 * 1.4276;
 
     return DOmgL;
+}
+
+uint16_t dec_hex16(uint16_t temp_value)
+{
+    uint8_t temp_arr[2];
+    temp_arr[0] = (temp_value >> 8);   //Higher Bits
+    temp_arr[1] = (temp_value & 0xFF); //Lower Bits
+
+    return (temp_arr[0] << 8 |temp_arr[1]);
 }
