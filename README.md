@@ -10,4 +10,5 @@ The codes are licensed under GNU LESSER GENERAL PUBLIC LICENSE
 *   The purpose of this project is to create a decentralised or independent controller for Glory Aquaculture Pvt. Ltd's 
 *   Prawn Intensive Farming Project. 
 *   The MODBUSRTU communication protocol is implemented according to Modbus_over_serial_line_V1_02.pdf
-*   This program only receives data from multiple slave devices, performs necessary calculations and later acts as a slave decice itself.
+*   This program only reads data from multiple slave devices, performs necessary calculations and later acts as a slave decice itself.
+*   ESP32 is used for it's versatility. 
