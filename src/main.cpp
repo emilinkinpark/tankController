@@ -98,7 +98,7 @@ void loop()
 
   /* Listens to Request from MOXA
   * Matches the datalength
-  * Matches the slaveID and CRC Check
+  * Matches the slaveID
   * 
   */
 
@@ -110,7 +110,7 @@ void loop()
     incomingData[i] = Serial1.read();
   }
 
-  if (incomingData[0] == 12)
+  if (incomingData[0] == 12)        //Matches Slave ID to Transmit Response Frame
   {
     //Serial.println("Serial ID found");
     modbusSlaveTransmit(2, 0x0C, 0x03, 0x04, temp_transmit >> 8, (uint8_t)temp_transmit, DOmgl_transmit >> 8, (uint8_t)DOmgl_transmit);
