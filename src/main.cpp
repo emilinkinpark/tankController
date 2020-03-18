@@ -25,9 +25,19 @@ uint16_t DOmgl_transmit = 0;
 int o2[13]; //O2 buffer length must have a size of 12 bytes
 int incomingData[7];
 
+void Core0code(void *pvParameters) //All other sensor and MQTT interface
+{
+  for (;;)
+  {
+  }
+}
+
 void setup()
 {
-  //Serial.begin(9600); //TXD0 - used as serial decorder
+
+  xTaskCreatePinnedToCore(Core0code, "Task0", 10000, NULL, 1, NULL, 0);
+
+  Serial.begin(9600); //TXD0 - used as serial decorder
 
   Serial1.begin(9600, SERIAL_8N1, 4, 2);
   /* UART1 Rx Pin = GPIO 4 and TX Pin = GPIO 2  
@@ -36,91 +46,86 @@ void setup()
   Serial2.begin(9600); /*  UART2 Rx Pin = GPIO 16 and TX Pin = GPIO 17 */
 }
 
-void loop()
+void loop() // All Modbus Operation
 {
-  memset(o2, 0, sizeof(o2));                     //Empties
-  memset(incomingData, 0, sizeof(incomingData)); //Empties array
 
-  // Start Measurement
-  modbusMasterTransmit(3, O2_slaveID, 0x03, 0x25, 0x00, 0x00, 0x01);
-  serial_flush_buffer(3); //Cleaning Response
-  delay(2000);
-  //Serial.println("Starting Measurement");
+  //  memset(o2, 0, sizeof(o2));                     //Empties array
+  // memset(incomingData, 0, sizeof(incomingData)); //Empties array
 
-  modbusMasterTransmit(3, O2_slaveID, 0x03, 0x26, 0x00, 0x00, 0x04);
-  for (int i = 0; i <= 5; i++)
-  {
-    modbusRead(3, O2_slaveID_DEC, 13, o2);
-    delay(100);
-  }
+  // // Start Measurement
+  // modbusMasterTransmit(3, O2_slaveID, 0x03, 0x25, 0x00, 0x00, 0x01);
+  // serial_flush_buffer(3); //Cleaning Response
+  // delay(2000);
+  // //Serial.println("Starting Measurement");
 
-  //Serial.println("Data Acquired");
+  // modbusMasterTransmit(3, O2_slaveID, 0x03, 0x26, 0x00, 0x00, 0x04);
+  // for (int i = 0; i <= 5; i++)
+  // {
+  //   modbusRead(3, O2_slaveID_DEC, 13, o2);
+  //   delay(100);
+  // }
 
-  if (o2[0] != 14) //Slave ID Check
-  {
-   // Serial.println("Slave ID not matched Transmission Halt!");
-    //Serial.println(o2[0], HEX);
-  }
-  else
-  {
-    float Conv_Temp = floatTOdecimal(o2[3], o2[4], o2[5], o2[6]);
-    float Temp_Manipulation = Conv_Temp * 100;
-    Temp_Send = Temp_Manipulation;
-    
+  // //Serial.println("Data Acquired");
 
-    float Conv_DOPerc = floatTOdecimal(o2[7], o2[8], o2[9], o2[10]);
-    float DOmgl = domglcalc(Conv_Temp, Conv_DOPerc);
-    
-    float DOmgl_Manipulation = DOmgl * 1000;
-    DOmgl_Send = DOmgl_Manipulation;
-    
+  // if (o2[0] != 14) //Slave ID Check
+  // {
+  //  // Serial.println("Slave ID not matched Transmission Halt!");
+  //   //Serial.println(o2[0], HEX);
+  // }
+  // else
+  // {
+  //   float Conv_Temp = floatTOdecimal(o2[3], o2[4], o2[5], o2[6]);
+  //   float Temp_Manipulation = Conv_Temp * 100;
+  //   Temp_Send = Temp_Manipulation;
 
-    /*
-    //Serial.write("Temperature: ");
-    //Serial.println(Conv_Temp);
-    //Serial.println(Temp_Send);
+  //   float Conv_DOPerc = floatTOdecimal(o2[7], o2[8], o2[9], o2[10]);
+  //   float DOmgl = domglcalc(Conv_Temp, Conv_DOPerc);
 
-    //Serial.write("DO Percentage: ");
-    //Serial.println(Conv_DOPerc * 100);
-    //Serial.write("DO mg/L: ");
-    //Serial.println(DOmgl);
-    //Serial.println(DOmgl_Send);
-    */
+  //   float DOmgl_Manipulation = DOmgl * 1000;
+  //   DOmgl_Send = DOmgl_Manipulation;
 
-  }
+  //   /*
+  //   //Serial.write("Temperature: ");
+  //   //Serial.println(Conv_Temp);
+  //   //Serial.println(Temp_Send);
 
-  // Stop Measurement
-  modbusMasterTransmit(3, O2_slaveID, 0x03, 0x2E, 0x00, 0x00, 0x01);
-  serial_flush_buffer(3); //Cleaning Response
-  //delay(100);
-  //Serial.println("Stop Measurement");
-  //Modbus Transmit to MOXA
+  //   //Serial.write("DO Percentage: ");
+  //   //Serial.println(Conv_DOPerc * 100);
+  //   //Serial.write("DO mg/L: ");
+  //   //Serial.println(DOmgl);
+  //   //Serial.println(DOmgl_Send);
+  //   */
 
-  /* Listens to Request from MOXA
-  * Matches the datalength
-  * Matches the slaveID
-  * 
-  */
+  // }
 
-  temp_transmit = dec_hex16(Temp_Send);
-  DOmgl_transmit = dec_hex16(DOmgl_Send);
+  // // Stop Measurement
+  // modbusMasterTransmit(3, O2_slaveID, 0x03, 0x2E, 0x00, 0x00, 0x01);
+  // serial_flush_buffer(3); //Cleaning Response
+  // //delay(100);
+  // //Serial.println("Stop Measurement");
+  // //Modbus Transmit to MOXA
 
-  for (size_t i = 0; i <= 7; i++)
-  {
-    incomingData[i] = Serial1.read();
-  }
+  // /* Listens to Request from MOXA
+  // * Matches the datalength
+  // * Matches the slaveID
+  // *
+  // */
 
-  if (incomingData[0] == 12)        //Matches Slave ID to Transmit Response Frame
-  {
-    //Serial.println("Serial ID found");
-    modbusSlaveTransmit(2, 0x0C, 0x03, 0x04, temp_transmit >> 8, (uint8_t)temp_transmit, DOmgl_transmit >> 8, (uint8_t)DOmgl_transmit);
-  }
-  else
-  {
-    ;;//Serial.println("Not Found");
-  }
-  
+  // temp_transmit = dec_hex16(Temp_Send);
+  // DOmgl_transmit = dec_hex16(DOmgl_Send);
 
-  //delay(1000);
+  // for (size_t i = 0; i <= 7; i++)
+  // {
+  //   incomingData[i] = Serial1.read();
+  // }
 
-} //End of Void Loop
+  // if (incomingData[0] == 12)        //Matches Slave ID to Transmit Response Frame
+  // {
+  //   //Serial.println("Serial ID found");
+  //   modbusSlaveTransmit(2, 0x0C, 0x03, 0x04, temp_transmit >> 8, (uint8_t)temp_transmit, DOmgl_transmit >> 8, (uint8_t)DOmgl_transmit);
+  // }
+  // else
+  // {
+  //   ;;//Serial.println("Not Found");
+  // }
+}
