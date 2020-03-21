@@ -13,6 +13,10 @@ extern "C" {
 #define MQTT_PORT 1883
 
 
+
+
+AsyncMqttClient mqttClient;
+
 #define RELAY_PIN 7
 
 #define MQTT_RELAY1_TOPIC     "LAB/LIGHT/MAIN/SWITCH"
@@ -21,33 +25,8 @@ extern "C" {
 #define MQTT_LASTWILL_TOPIC   "LAB/LIGHT/lastwill"
 
 
-AsyncMqttClient mqttClient;
-TimerHandle_t mqttReconnectTimer;
-TimerHandle_t wifiReconnectTimer;
 
 
-
-void connectToMqtt() {
-  Serial.println("Connecting to MQTT...");
-  mqttClient.connect();
-}
-
-void WiFiEvent(WiFiEvent_t event) {
-    Serial.printf("[WiFi-event] event: %d\n", event);
-    switch(event) {
-    case SYSTEM_EVENT_STA_GOT_IP:
-        Serial.println("WiFi connected");
-        Serial.println("IP address: ");
-        Serial.println(WiFi.localIP());
-        connectToMqtt();
-        break;
-    case SYSTEM_EVENT_STA_DISCONNECTED:
-        Serial.println("WiFi lost connection");
-        xTimerStop(mqttReconnectTimer, 0); // ensure we don't reconnect to MQTT while reconnecting to Wi-Fi
-		xTimerStart(wifiReconnectTimer, 0);
-        break;
-    }
-}
 void setRelay(String command) {
   if (command == "ON") digitalWrite(RELAY_PIN, HIGH);
   else digitalWrite(RELAY_PIN, LOW);
@@ -143,7 +122,7 @@ void mqttsetup() {
   //  mqttClient.onUnsubscribe(onMqttUnsubscribe);
   mqttClient.onMessage(onMqttMessage);
   mqttClient.onPublish(onMqttPublish);
-  mqttClient.setServer(IPAddress(192, 168, 0, 201), 1883);
+  mqttClient.setServer(MQTT_HOST, MQTT_PORT);
   mqttClient.setKeepAlive(5).setCleanSession(false).setWill(MQTT_LASTWILL_TOPIC, 2, true, "my wife will get all my money").setCredentials("username", "password").setClientId("m");
   Serial.println("Connecting to MQTT...");
   mqttClient.connect();
