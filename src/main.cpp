@@ -13,7 +13,7 @@
 
 
 
-
+#include "mqtt.cpp"
 #include "modbus.h"
 #include "modbus.cpp"
 #include "conversions.cpp"
@@ -42,10 +42,6 @@ int redFrequency = 0;
 int greenFrequency = 0;
 int blueFrequency = 0;
 
-
-
-
-
 // DO sensor ID
 #define O2_slaveID 0x0E
 #define O2_slaveID_DEC 14
@@ -64,7 +60,7 @@ void Core0code(void *pvParameters) //All other sensor and MQTT interface
   for (;;)
  {
 
-   bmeRun();          // Running bme680 codes
+  // bmeRun();          // Running bme680 codes
 //   //TCS3200 Code Start 
 //   // Setting RED (R) filtered photodiodes to be read
 //   digitalWrite(S2,LOW);
@@ -109,7 +105,7 @@ void Core0code(void *pvParameters) //All other sensor and MQTT interface
 void setup()
 {
 
-  xTaskCreatePinnedToCore(Core0code, "Task0", 10000, NULL, 1, NULL, 0);   // Handle to access core 0
+  //xTaskCreatePinnedToCore(Core0code, "Task0", 10000, NULL, 1, NULL, 0);   // Handle to access core 0
 
   Serial.begin(9600); //TXD0 - used as serial decorder
 
@@ -118,6 +114,7 @@ void setup()
 
   Serial2.begin(9600,SERIAL_8N1,UART2_RX,UART2_TX); 
 
+  mqttsetup();
 
   // // TCS3200 Color Sensor Setup
   // // Setting the outputs
@@ -134,7 +131,7 @@ void setup()
   // digitalWrite(S1,LOW);
   // // TCS3200 Sensor Setup end
 
-  bmeInit();      // Initialising BME680 dependents
+  //bmeInit();      // Initialising BME680 dependents
  
 
 

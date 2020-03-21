@@ -8,6 +8,9 @@
             "includePath": [
                 "C:/Users/emili/Documents/PlatformIO/Projects/tankController/include",
                 "C:/Users/emili/Documents/PlatformIO/Projects/tankController/src",
+                "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
+                "C:/Users/emili/.platformio/lib/AsyncMqttClient_ID346/src",
+                "C:/Users/emili/.platformio/lib/AsyncTCP_ID1826/src",
                 "C:/Users/emili/.platformio/lib/Adafruit BME680 Library_ID1922",
                 "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/libraries/Wire/src",
                 "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/libraries/SPI/src",
@@ -70,8 +73,6 @@
                 "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/fb_gfx",
                 "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/cores/esp32",
                 "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/variants/esp32",
-                "C:/Users/emili/.platformio/lib/AsyncMqttClient_ID346/src",
-                "C:/Users/emili/.platformio/lib/AsyncTCP_ID1826/src",
                 "C:/Users/emili/.platformio/lib/BSEC Software Library_ID6979/src",
                 "C:/Users/emili/.platformio/lib/MD_TCS230_ID960/src",
                 "C:/Users/emili/.platformio/lib/Modbus_ID1726",
@@ -99,7 +100,6 @@
                 "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/libraries/Ticker/src",
                 "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/libraries/Update/src",
                 "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/libraries/WebServer/src",
-                "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
                 "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src",
                 "C:/Users/emili/.platformio/packages/tool-unity",
                 ""
@@ -109,6 +109,9 @@
                 "path": [
                     "C:/Users/emili/Documents/PlatformIO/Projects/tankController/include",
                     "C:/Users/emili/Documents/PlatformIO/Projects/tankController/src",
+                    "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
+                    "C:/Users/emili/.platformio/lib/AsyncMqttClient_ID346/src",
+                    "C:/Users/emili/.platformio/lib/AsyncTCP_ID1826/src",
                     "C:/Users/emili/.platformio/lib/Adafruit BME680 Library_ID1922",
                     "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/libraries/Wire/src",
                     "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/libraries/SPI/src",
@@ -171,8 +174,6 @@
                     "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/fb_gfx",
                     "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/cores/esp32",
                     "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/variants/esp32",
-                    "C:/Users/emili/.platformio/lib/AsyncMqttClient_ID346/src",
-                    "C:/Users/emili/.platformio/lib/AsyncTCP_ID1826/src",
                     "C:/Users/emili/.platformio/lib/BSEC Software Library_ID6979/src",
                     "C:/Users/emili/.platformio/lib/MD_TCS230_ID960/src",
                     "C:/Users/emili/.platformio/lib/Modbus_ID1726",
@@ -200,7 +201,6 @@
                     "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/libraries/Ticker/src",
                     "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/libraries/Update/src",
                     "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/libraries/WebServer/src",
-                    "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
                     "C:/Users/emili/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src",
                     "C:/Users/emili/.platformio/packages/tool-unity",
                     ""
