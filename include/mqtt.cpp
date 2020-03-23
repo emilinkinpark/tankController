@@ -1,129 +1,119 @@
+/*
+Main Idea Taken from Rui Santos - https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/
+*/
 
 #include <WiFi.h>
-extern "C" {
-	#include "freertos/FreeRTOS.h"
-	#include "freertos/timers.h"
-}
-#include <AsyncMqttClient.h>
+#include <PubSubClient.h>
 
-#define mySSID "GloryAgro"
-#define myPASSWORD "Gloryart1!1"
+// Replace the next variables with your SSID/Password combination
+const char *ssid = "REPLACE_WITH_YOUR_SSID";
+const char *password = "REPLACE_WITH_YOUR_PASSWORD";
 
-#define MQTT_HOST IPAddress(192, 168, 0, 20)
-#define MQTT_PORT 1883
+// Add your MQTT Broker IP address, example:
+//const char* mqtt_server = "192.168.1.144";
+const char *mqtt_server = "YOUR_MQTT_BROKER_IP_ADDRESS";
 
+WiFiClient espClient;
+PubSubClient client(espClient);
+long lastMsg = 0;
+char msg[50];
+int value = 0;
 
+void setup_wifi()
+{
+  delay(10);
+  // We start by connecting to a WiFi network
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
 
+  WiFi.begin(ssid, password);
 
-AsyncMqttClient mqttClient;
-
-#define RELAY_PIN 7
-
-#define MQTT_RELAY1_TOPIC     "LAB/LIGHT/MAIN/SWITCH"
-#define MQTT_RELAY2_TOPIC     "LAB/LIGHT/BENCH"
-#define MQTT_FEEDBACK1_TOPIC  "LAB/LIGHT/MAIN/FEEDBACK"
-#define MQTT_LASTWILL_TOPIC   "LAB/LIGHT/lastwill"
-
-
-
-
-void setRelay(String command) {
-  if (command == "ON") digitalWrite(RELAY_PIN, HIGH);
-  else digitalWrite(RELAY_PIN, LOW);
-}
-
-void onMqttConnect(bool sessionPresent) {
-  Serial.println("** Connected to the broker **");
-
-  mqttClient.subscribe(MQTT_RELAY1_TOPIC, 1);
-
-  Serial.print("Subscribing : ");
-  Serial.println(MQTT_RELAY1_TOPIC);
-}
-
-void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
-  Serial.println("** Disconnected from the broker **");
-  Serial.println("Reconnecting to MQTT...");
-  mqttClient.connect();
-}
-
-void onMqttSubscribe(uint16_t packetId, uint8_t qos) {
-  Serial.print("** Subscribe acknowledged **");
-  Serial.print(" packetId: ");
-  Serial.print(packetId);
-  Serial.print(" qos: ");
-  Serial.println(qos);
-}
-
-void onMqttUnsubscribe(uint16_t packetId) {
-  Serial.println("** Unsubscribe acknowledged **");
-  Serial.print("  packetId: ");
-  Serial.println(packetId);
-}
-
-void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
-
-  Serial.println("** Message received **");
-  Serial.print("  topic: ");
-  Serial.print(topic);
-  Serial.print("  feedbackTopic: ");
-  Serial.print(MQTT_RELAY1_TOPIC);
-  Serial.print("  qos: ");
-  Serial.print(properties.qos);
-  Serial.print("  dup: ");
-  Serial.print(properties.dup);
-  Serial.print("  retain: ");
-  Serial.print(properties.retain);
-  Serial.print("  len: ");
-  Serial.print(len);
-  Serial.print("  index: ");
-  Serial.print(index);
-  Serial.print("  payload: ");
-  Serial.println(payload);
-
-  if (strcmp(topic, MQTT_RELAY1_TOPIC) == 0)  {
-    setRelay(payload);
-    mqttClient.publish(MQTT_FEEDBACK1_TOPIC, 1, false, payload);
-    Serial.println("Publishing Feedback");
-  }
-}
-
-void onMqttPublish(uint16_t packetId) {
-  Serial.print("** Published");
-  Serial.print("  packetId: ");
-  Serial.print(packetId);
-  Serial.print("\n\n");
-}
-
-void mqttsetup() {
-  Serial.begin(115200);
-  Serial.println("");
-  Serial.println("Start");
-
-  // Relay PIN
-  pinMode(RELAY_PIN, OUTPUT);
-  digitalWrite(RELAY_PIN, LOW);
-  WiFi.persistent(false);
-
-  WiFi.mode(WIFI_STA);
-  Serial.print("Connecting to Wi-Fi");
-  WiFi.begin(mySSID, myPASSWORD);
-
-  while (WiFi.status() != WL_CONNECTED) {
+  while (WiFi.status() != WL_CONNECTED)
+  {
     delay(500);
     Serial.print(".");
   }
 
-  Serial.println(" OK");
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+}
 
-  mqttClient.onConnect(onMqttConnect);
-  mqttClient.onDisconnect(onMqttDisconnect);
-  // mqttClient.onSubscribe(onMqttSubscribe);
-  //  mqttClient.onUnsubscribe(onMqttUnsubscribe);
-  mqttClient.onMessage(onMqttMessage);
-  mqttClient.onPublish(onMqttPublish);
-  mqttClient.setServer(MQTT_HOST, MQTT_PORT);
-  mqttClient.setKeepAlive(5).setCleanSession(false).setWill(MQTT_LASTWILL_TOPIC, 2, true, "my wife will get all my money").setCredentials("username", "password").setClientId("m");
-  Serial.println("Connecting to MQTT...");
-  mqttClient.connect();
+void callback(char *topic, byte *message, unsigned int length)
+{
+  Serial.print("Message arrived on topic: ");
+  Serial.print(topic);
+  Serial.print(". Message: ");
+  String messageTemp;
+
+  for (int i = 0; i < length; i++)
+  {
+    Serial.print((char)message[i]);
+    messageTemp += (char)message[i];
+  }
+  Serial.println();
+
+  // Feel free to add more if statements to control more GPIOs with MQTT
+
+  // If a message is received on the topic esp32/output, you check if the message is either "on" or "off".
+  // Changes the output state according to the message
+  // if (String(topic) == "esp32/output")
+  // {
+  //   Serial.print("Changing output to ");
+  //   if (messageTemp == "on")
+  //   {
+  //     Serial.println("on");
+  //     digitalWrite(ledPin, HIGH);
+  //   }
+  //   else if (messageTemp == "off")
+  //   {
+  //     Serial.println("off");
+  //     digitalWrite(ledPin, LOW);
+  //   }
+  // }
+}
+
+void reconnect()
+{
+  // Loop until we're reconnected
+  while (!client.connected())
+  {
+    Serial.print("Attempting MQTT connection...");
+    // Attempt to connect
+    if (client.connect("ESP32Client"))
+    {
+      Serial.println("connected");
+      // Subscribe
+      client.subscribe("esp32/output");
+    }
+    else
+    {
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" try again in 5 seconds");
+      // Wait 5 seconds before retrying
+      delay(5000);
+    }
+  }
+}
+
+void mqtt_init()
+{
+  setup_wifi();
+  client.setServer(mqtt_server, 1883);
+  client.setCallback(callback);
+}
+
+void mqttloop()
+{ // This part needs to be in loop
+
+  if (!client.connected())
+  { //Reconnect if network fails
+    reconnect();
+  }
+  client.loop();
+
+  //Future addition - if server fails 5 times; go to redundancy
 }

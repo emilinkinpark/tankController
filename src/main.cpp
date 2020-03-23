@@ -4,31 +4,30 @@
 *   More on the lincense at <https://www.gnu.org/licenses/lgpl-3.0.en.html>
 *   Everyone is permitted to copy and distribute verbatim copies of this license document, but changing is not allowed.
 *   
-*   Acknowledgement: The project uses libraries used in Arduino IDE.
+*   Acknowledgement: The project uses a lot of free libraries from different contributors. An special thanks to all hard working software people. 
+*                    Specific acknowledgement is made into the seperate files in the include folder.
 *    
-*   The purpose of this project is to create a decentralised or independent controller for Glory Aquaculture Pvt. Ltd's Prawn Intensive Farming Project. 
-*   The MODBUSRTU communication protocol is implemented according to Modbus_over_serial_line_V1_02.pdf
-*   Only MODBUS Holding Register (0x03) is implemented.
+*   The purpose of this project is to create a decentralised or independent controller for Glory Agro Project Ltd's Intensive Prawn Farming Project. 
+*   The field slave devices talks back to ESP32 (Master) over RS485 Modbus.
+*   The data is taken in and send to Raspberrypi MQTT server over Wifi
+*   
 */
-
-
 
 #include "mqtt.cpp"
 #include "modbus.h"
 #include "modbus.cpp"
-#include "conversions.cpp"
 
+#include "conversions.cpp"
 #include "bme680.cpp"
 
 //Serial Pins Definition
 
-#define UART1_RX  4
-#define UART1_TX  2
-#define UART2_RX  16
-#define UART2_TX  17
+#define UART1_RX 4
+#define UART1_TX 2
+#define UART2_RX 16
+#define UART2_TX 17
 
-
-// TCS3200 Color Sensor 
+// TCS3200 Color Sensor
 
 // TCS230 or TCS3200 pins wiring to Arduino
 #define S0 32
@@ -58,47 +57,46 @@ int incomingData[7];
 void Core0code(void *pvParameters) //All other sensor and MQTT interface
 {
   for (;;)
- {
+  {
 
-  // bmeRun();          // Running bme680 codes
-//   //TCS3200 Code Start 
-//   // Setting RED (R) filtered photodiodes to be read
-//   digitalWrite(S2,LOW);
-//   digitalWrite(S3,LOW);
-  
-//   // Reading the output frequency
-//   redFrequency = pulseIn(sensorOut, LOW);
-  
-//    // Printing the RED (R) value
-//   Serial.print("R = ");
-//   Serial.print(redFrequency);
-//   delay(100);
-  
-//   // Setting GREEN (G) filtered photodiodes to be read
-//   digitalWrite(S2,HIGH);
-//   digitalWrite(S3,HIGH);
-  
-//   // Reading the output frequency
-//   greenFrequency = pulseIn(sensorOut, LOW);
-  
-//   // Printing the GREEN (G) value  
-//   Serial.print(" G = ");
-//   Serial.print(greenFrequency);
-//   delay(100);
- 
-//   // Setting BLUE (B) filtered photodiodes to be read
-//   digitalWrite(S2,LOW);
-//   digitalWrite(S3,HIGH);
-  
-//   // Reading the output frequency
-//   blueFrequency = pulseIn(sensorOut, LOW);
-  
-//   // Printing the BLUE (B) value 
-//   Serial.print(" B = ");
-//   Serial.println(blueFrequency);
-//   delay(100);
-// // TCS3200 code end
+    // bmeRun();          // Running bme680 codes
+    //   //TCS3200 Code Start
+    //   // Setting RED (R) filtered photodiodes to be read
+    //   digitalWrite(S2,LOW);
+    //   digitalWrite(S3,LOW);
 
+    //   // Reading the output frequency
+    //   redFrequency = pulseIn(sensorOut, LOW);
+
+    //    // Printing the RED (R) value
+    //   Serial.print("R = ");
+    //   Serial.print(redFrequency);
+    //   delay(100);
+
+    //   // Setting GREEN (G) filtered photodiodes to be read
+    //   digitalWrite(S2,HIGH);
+    //   digitalWrite(S3,HIGH);
+
+    //   // Reading the output frequency
+    //   greenFrequency = pulseIn(sensorOut, LOW);
+
+    //   // Printing the GREEN (G) value
+    //   Serial.print(" G = ");
+    //   Serial.print(greenFrequency);
+    //   delay(100);
+
+    //   // Setting BLUE (B) filtered photodiodes to be read
+    //   digitalWrite(S2,LOW);
+    //   digitalWrite(S3,HIGH);
+
+    //   // Reading the output frequency
+    //   blueFrequency = pulseIn(sensorOut, LOW);
+
+    //   // Printing the BLUE (B) value
+    //   Serial.print(" B = ");
+    //   Serial.println(blueFrequency);
+    //   delay(100);
+    // // TCS3200 code end
   }
 }
 
@@ -109,12 +107,12 @@ void setup()
 
   Serial.begin(9600); //TXD0 - used as serial decorder
 
-  Serial1.begin(9600, SERIAL_8N1, UART1_RX, UART1_TX); 
+  Serial1.begin(9600, SERIAL_8N1, UART1_RX, UART1_TX);
   //Caution: Remove Pins before uploading firmware!!!!! // Shared with Flash
 
-  Serial2.begin(9600,SERIAL_8N1,UART2_RX,UART2_TX); 
+  Serial2.begin(9600, SERIAL_8N1, UART2_RX, UART2_TX);
 
-  mqttsetup();
+  mqtt_init(); //Initialising MQTT Dependencies
 
   // // TCS3200 Color Sensor Setup
   // // Setting the outputs
@@ -122,29 +120,22 @@ void setup()
   // pinMode(S1, OUTPUT);
   // pinMode(S2, OUTPUT);
   // pinMode(S3, OUTPUT);
-  
+
   // // Setting the sensorOut as an input
   // pinMode(sensorOut, INPUT);
-  
+
   // // Setting frequency scaling to 20%
   // digitalWrite(S0,HIGH);
   // digitalWrite(S1,LOW);
   // // TCS3200 Sensor Setup end
 
   //bmeInit();      // Initialising BME680 dependents
- 
-
-
-
 }
-
-
-
 
 void loop() // All Modbus Operation
 {
-
-  //  memset(o2, 0, sizeof(o2));                     //Empties array
+  // //Modbus Master Start
+  // memset(o2, 0, sizeof(o2));                     //Empties array
   // memset(incomingData, 0, sizeof(incomingData)); //Empties array
 
   // // Start Measurement
@@ -208,7 +199,8 @@ void loop() // All Modbus Operation
 
   // temp_transmit = dec_hex16(Temp_Send);
   // DOmgl_transmit = dec_hex16(DOmgl_Send);
-
+  // //Modbus Master End
+  // //Modbus Slave Start
   // for (size_t i = 0; i <= 7; i++)
   // {
   //   incomingData[i] = Serial1.read();
@@ -223,4 +215,26 @@ void loop() // All Modbus Operation
   // {
   //   ;;//Serial.println("Not Found");
   // }
+  // //Modbus Slave End
+  //MQTT Start
+  long now = millis();
+  if (now - lastMsg > 5000)
+  {
+    lastMsg = now;
+
+    // Convert the value to a char array
+    char tempString[8];
+    dtostrf(temperature, 1, 2, tempString);
+    Serial.print("Temperature: ");
+    Serial.println(tempString);
+    client.publish("esp32/temperature", tempString);
+
+    // Convert the value to a char array
+    char humString[8];
+    dtostrf(humidity, 1, 2, humString);
+    Serial.print("Humidity: ");
+    Serial.println(humString);
+    client.publish("esp32/humidity", humString);
+    //MQTT End
+  }
 }
