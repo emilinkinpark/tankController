@@ -11,10 +11,10 @@ Adafruit_BME680 bme; // I2C
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 
-float temperature = 0.00;
-float pressure = 0.00;
-float humidity = 0.00;
-float altitude = 0.00;
+char air_temp = 0.00;
+float ambient_pressure = 0.00;
+float ambient_humidity = 0.00;
+float ambient_altitude = 0.00;
 
 void bmeInit()
 {
@@ -44,33 +44,33 @@ void bmeRun()
   {
     Serial.println("Failed to perform reading :(");
   }
-  temperature = bme.temperature;
-  pressure = bme.pressure / 100.0;
-  humidity = bme.humidity;
-  altitude = bme.readAltitude(SEALEVELPRESSURE_HPA);
+  air_temp = bme.temperature;
+  ambient_pressure = bme.pressure / 100.0;
+  ambient_humidity = bme.humidity;
+  ambient_altitude = bme.readAltitude(SEALEVELPRESSURE_HPA);
 
-  //Debugging Start
+  // //Debugging Start
 
-  Serial.print("Temperature = ");
-  Serial.print(temperature);
-  Serial.println(" *C");
+  // Serial.print("Temperature = ");
+  // Serial.print(air_temp);
+  // Serial.println(" *C");
 
-  Serial.print("Pressure = ");
-  Serial.print(pressure);
-  Serial.println(" hPa");
+  // Serial.print("Pressure = ");
+  // Serial.print(ambient_pressure);
+  // Serial.println(" hPa");
 
-  Serial.print("Humidity = ");
-  Serial.print(humidity);
-  Serial.println(" %");
+  // Serial.print("Humidity = ");
+  // Serial.print(ambient_humidity);
+  // Serial.println(" %");
 
-  Serial.print("Gas = ");
-  Serial.print(bme.gas_resistance / 1000.0);
-  Serial.println(" KOhms");
+  // // Serial.print("Gas = ");
+  // // Serial.print(bme.gas_resistance / 1000.0);
+  // // Serial.println(" KOhms");
 
-  Serial.print("Approx. Altitude = ");
-  Serial.print(altitude);
-  Serial.println(" m");
-  Serial.println();
-  //Debugging End
+  // Serial.print("Approx. Altitude = ");
+  // Serial.print(ambient_altitude);
+  // Serial.println(" m");
+  // Serial.println();
+  // //Debugging End
   delay(2000);
 }

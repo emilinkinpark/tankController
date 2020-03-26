@@ -103,15 +103,15 @@ void Core0code(void *pvParameters) //All other sensor and MQTT interface
 void setup()
 {
 
-  //xTaskCreatePinnedToCore(Core0code, "Task0", 10000, NULL, 1, NULL, 0);   // Handle to access core 0
+  //xTaskCreatePinnedToCore(Core0code, "Task0", 10000, NULL, 1, NULL, 0);   // Handle to access core 0, ill advised to use while using WiFi or BLE
 
   Serial.begin(9600); //TXD0 - used as serial decorder
 
-  Serial1.begin(9600, SERIAL_8N1, UART1_RX, UART1_TX);
+  //Serial1.begin(9600, SERIAL_8N1, UART1_RX, UART1_TX);
   //Caution: Remove Pins before uploading firmware!!!!! // Shared with Flash
 
-  Serial2.begin(9600, SERIAL_8N1, UART2_RX, UART2_TX);
-
+  //Serial2.begin(9600, SERIAL_8N1, UART2_RX, UART2_TX);
+  bmeInit();   // Initialising BME680 Dependencies
   mqtt_init(); //Initialising MQTT Dependencies
 
   // // TCS3200 Color Sensor Setup
@@ -129,11 +129,11 @@ void setup()
   // digitalWrite(S1,LOW);
   // // TCS3200 Sensor Setup end
 
-  //bmeInit();      // Initialising BME680 dependents
 }
 
 void loop() // All Modbus Operation
 {
+
   // //Modbus Master Start
   // memset(o2, 0, sizeof(o2));                     //Empties array
   // memset(incomingData, 0, sizeof(incomingData)); //Empties array
@@ -216,25 +216,74 @@ void loop() // All Modbus Operation
   //   ;;//Serial.println("Not Found");
   // }
   // //Modbus Slave End
+
+  long now = millis(); //MQTT dependant
+  
+  
+  
+  bmeRun(); //BME680 reading
+
+
+
+
   //MQTT Start
-  long now = millis();
+  mqttloop();
+  //mqttpayload(air_temp, 0, 0, 0, ambient_pressure, ambient_humidity, ambient_altitude, 0, 0, 0, 0);
   if (now - lastMsg > 5000)
   {
     lastMsg = now;
+    char str[50];  //Stores Payload to send out
+    char temp[8]; 
 
-    // Convert the value to a char array
-    char tempString[8];
-    dtostrf(temperature, 1, 2, tempString);
-    Serial.print("Temperature: ");
-    Serial.println(tempString);
-    client.publish("esp32/temperature", tempString);
+    dtostrf(air_temp, 1, 2, temp);
+    strcpy(str, "{");
+    strcat(str, "\"air_temp\"");
+    strcat(str, "\:");
+    strcat(str, temp);
+    strcat(str, "}");
+    client.publish("tank1/data/bme680", str);
 
-    // Convert the value to a char array
-    char humString[8];
-    dtostrf(humidity, 1, 2, humString);
-    Serial.print("Humidity: ");
-    Serial.println(humString);
-    client.publish("esp32/humidity", humString);
-    //MQTT End
+    dtostrf(ambient_pressure, 1, 2, temp);
+    strcpy(str, "{");
+    strcat(str, "\"ambient_pressure\"");
+    strcat(str, "\:");
+    strcat(str, temp);
+    strcat(str, "}");
+    client.publish("tank1/data/bme680", str);
+    delay(100);
+
+
+    dtostrf(ambient_humidity, 1, 2, temp);
+    strcpy(str, "{");
+    strcat(str, "\"ambient_humidity\"");
+    strcat(str, "\:");
+    strcat(str, temp);
+    strcat(str, "}");
+    client.publish("tank1/data/bme680", str);
+
+    dtostrf(ambient_altitude, 1, 2, temp);
+    strcpy(str, "{");
+    strcat(str, "\"ambient_altitude\"");
+    strcat(str, "\:");
+    strcat(str, temp);
+    strcat(str, "}");
+    client.publish("tank1/data/bme680", str);
+    delay(100);
+
+
+    dtostrf(heartbeat, 1, 2, temp);
+    strcpy(str, "{");
+    strcat(str, "\"heartbeat\"");
+    strcat(str, "\:");
+    strcat(str, temp);
+    strcat(str, "}");
+    client.publish("tank1/data/heartbeat", str);
+    heartbeat++;
+
+
+    memset(str, 0, sizeof(str));   //Empties array
   }
+  //MQTT End
+
+  //Serial.println(millis()-now);   //Shows time to complete a full cycle in milli seconds
 }

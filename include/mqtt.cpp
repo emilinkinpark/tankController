@@ -6,18 +6,20 @@ Main Idea Taken from Rui Santos - https://randomnerdtutorials.com/esp32-mqtt-pub
 #include <PubSubClient.h>
 
 // Replace the next variables with your SSID/Password combination
-const char *ssid = "REPLACE_WITH_YOUR_SSID";
-const char *password = "REPLACE_WITH_YOUR_PASSWORD";
+const char *ssid = "GloryAgro";
+const char *password = "Gloryart1!1";
 
 // Add your MQTT Broker IP address, example:
 //const char* mqtt_server = "192.168.1.144";
-const char *mqtt_server = "YOUR_MQTT_BROKER_IP_ADDRESS";
+const char *mqtt_server = "192.168.0.29";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 long lastMsg = 0;
 char msg[50];
 int value = 0;
+
+uint heartbeat = 0; //Device Heartbeat
 
 void setup_wifi()
 {
@@ -105,6 +107,7 @@ void mqtt_init()
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
 }
+
 
 void mqttloop()
 { // This part needs to be in loop
