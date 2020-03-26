@@ -5,6 +5,8 @@ Main Idea Taken from Rui Santos - https://randomnerdtutorials.com/esp32-mqtt-pub
 #include <WiFi.h>
 #include <PubSubClient.h>
 
+#include "bme680.cpp"
+
 // Replace the next variables with your SSID/Password combination
 const char *ssid = "GloryAgro";
 const char *password = "Gloryart1!1";
@@ -12,6 +14,8 @@ const char *password = "Gloryart1!1";
 // Add your MQTT Broker IP address, example:
 //const char* mqtt_server = "192.168.1.144";
 const char *mqtt_server = "192.168.0.29";
+
+#define MQTTpubQos 2 //qos of publish
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -108,15 +112,66 @@ void mqtt_init()
   client.setCallback(callback);
 }
 
-
 void mqttloop()
-{ // This part needs to be in loop
-
+{                      // This part needs to be in loop
+  long now = millis(); //MQTT dependant
   if (!client.connected())
   { //Reconnect if network fails
     reconnect();
   }
   client.loop();
 
+  if (now - lastMsg > 5000)
+  {
+    lastMsg = now;
+    char str[50]; //Stores Payload to send out
+    char temp[8];
+
+    dtostrf(air_temp, 1, 2, temp);
+    strcpy(str, "{");
+    strcat(str, "\"air_temp\"");
+    strcat(str, "\:");
+    strcat(str, temp);
+    strcat(str, "}");
+    client.publish("tank1/data/bme680", str);
+
+    dtostrf(ambient_pressure, 1, 2, temp);
+    strcpy(str, "{");
+    strcat(str, "\"ambient_pressure\"");
+    strcat(str, "\:");
+    strcat(str, temp);
+    strcat(str, "}");
+    client.publish("tank1/data/bme680", str);
+    delay(100);
+
+    dtostrf(ambient_humidity, 1, 2, temp);
+    strcpy(str, "{");
+    strcat(str, "\"ambient_humidity\"");
+    strcat(str, "\:");
+    strcat(str, temp);
+    strcat(str, "}");
+    client.publish("tank1/data/bme680", str);
+
+    dtostrf(ambient_altitude, 1, 2, temp);
+    strcpy(str, "{");
+    strcat(str, "\"ambient_altitude\"");
+    strcat(str, "\:");
+    strcat(str, temp);
+    strcat(str, "}");
+    client.publish("tank1/data/bme680", str);
+    delay(100);
+
+    dtostrf(heartbeat, 1, 2, temp);
+    strcpy(str, "{");
+    strcat(str, "\"heartbeat\"");
+    strcat(str, "\:");
+    strcat(str, temp);
+    strcat(str, "}");
+    client.publish("tank1/data/heartbeat", str);
+    heartbeat++;
+
+    memset(str, 0, sizeof(str)); //Empties array
+  }
+  //MQTT End
   //Future addition - if server fails 5 times; go to redundancy
 }

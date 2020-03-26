@@ -18,7 +18,7 @@
 #include "modbus.cpp"
 
 #include "conversions.cpp"
-#include "bme680.cpp"
+
 
 //Serial Pins Definition
 
@@ -217,73 +217,10 @@ void loop() // All Modbus Operation
   // }
   // //Modbus Slave End
 
-  long now = millis(); //MQTT dependant
   
+  bmeRun(); //BME680 reading  
+  mqttloop();  //MQTT Start
   
-  
-  bmeRun(); //BME680 reading
-
-
-
-
-  //MQTT Start
-  mqttloop();
-  //mqttpayload(air_temp, 0, 0, 0, ambient_pressure, ambient_humidity, ambient_altitude, 0, 0, 0, 0);
-  if (now - lastMsg > 5000)
-  {
-    lastMsg = now;
-    char str[50];  //Stores Payload to send out
-    char temp[8]; 
-
-    dtostrf(air_temp, 1, 2, temp);
-    strcpy(str, "{");
-    strcat(str, "\"air_temp\"");
-    strcat(str, "\:");
-    strcat(str, temp);
-    strcat(str, "}");
-    client.publish("tank1/data/bme680", str);
-
-    dtostrf(ambient_pressure, 1, 2, temp);
-    strcpy(str, "{");
-    strcat(str, "\"ambient_pressure\"");
-    strcat(str, "\:");
-    strcat(str, temp);
-    strcat(str, "}");
-    client.publish("tank1/data/bme680", str);
-    delay(100);
-
-
-    dtostrf(ambient_humidity, 1, 2, temp);
-    strcpy(str, "{");
-    strcat(str, "\"ambient_humidity\"");
-    strcat(str, "\:");
-    strcat(str, temp);
-    strcat(str, "}");
-    client.publish("tank1/data/bme680", str);
-
-    dtostrf(ambient_altitude, 1, 2, temp);
-    strcpy(str, "{");
-    strcat(str, "\"ambient_altitude\"");
-    strcat(str, "\:");
-    strcat(str, temp);
-    strcat(str, "}");
-    client.publish("tank1/data/bme680", str);
-    delay(100);
-
-
-    dtostrf(heartbeat, 1, 2, temp);
-    strcpy(str, "{");
-    strcat(str, "\"heartbeat\"");
-    strcat(str, "\:");
-    strcat(str, temp);
-    strcat(str, "}");
-    client.publish("tank1/data/heartbeat", str);
-    heartbeat++;
-
-
-    memset(str, 0, sizeof(str));   //Empties array
-  }
-  //MQTT End
 
   //Serial.println(millis()-now);   //Shows time to complete a full cycle in milli seconds
 }
