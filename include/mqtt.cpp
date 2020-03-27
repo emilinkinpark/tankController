@@ -15,8 +15,6 @@ const char *password = "Gloryart1!1";
 //const char* mqtt_server = "192.168.1.144";
 const char *mqtt_server = "192.168.0.29";
 
-#define MQTTpubQos 2 //qos of publish
-
 WiFiClient espClient;
 PubSubClient client(espClient);
 long lastMsg = 0;
