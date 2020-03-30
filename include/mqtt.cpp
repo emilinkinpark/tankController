@@ -5,30 +5,29 @@ Main Idea Taken from Rui Santos - https://randomnerdtutorials.com/esp32-mqtt-pub
 #include <WiFi.h>
 #include <PubSubClient.h>
 
+//Insert all sensor header here.
+#include "DOpH.cpp"
 #include "bme680.cpp"
 
 //WIFI
-#define SSID  "GloryAgro"
-#define PASS  "Gloryart1!1"
+#define SSID "GloryAgro"
+#define PASS "Gloryart1!1"
 
-//MQTT 
-#define MQTT_Broker_IP  "192.168.0.29"
-#define MQTT_Fallback_IP  "0.0.0.0"       //Implementation Required
+//MQTT
+#define MQTT_Broker_IP "192.168.0.29"
+#define MQTT_Fallback_IP "0.0.0.0" //Implementation Required
 
 //Topic Declaration
 #define BME_TOPIC "TANK1/DATA/BME680"
 #define PT100_TOPIC "TANK1/DATA/TEMP"
-#define DO_TOPIC  "TANK1/DATA/LT105A"
-#define pH_TOPIC  "TANK1/DATA/pH"
-
-
+#define DO_TOPIC "TANK1/DATA/LT105A"
+#define pH_TOPIC "TANK1/DATA/pH"
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 long lastMsg = 0;
 char msg[50];
 int value = 0;
-
 
 void setup_wifi()
 {
@@ -118,9 +117,9 @@ void mqtt_init()
 }
 
 void mqttloop()
-{                      // This part needs to be in loop
-  boolean heartbeat=0; // Heartbeat of the device
-  long now = millis(); //MQTT dependant
+{                        // This part needs to be in loop
+  boolean heartbeat = 0; // Heartbeat of the device
+  long now = millis();   //MQTT dependant
   if (!client.connected())
   { //Reconnect if network fails
     reconnect();
@@ -133,7 +132,7 @@ void mqttloop()
     char str[50]; //Stores Payload to send out
     char temp[8];
 
-    heartbeat = 1;                                                //Heartbeat publishes 1 to mark start of transmission
+    heartbeat = 1; //Heartbeat publishes 1 to mark start of transmission
     dtostrf(heartbeat, 1, 2, temp);
     strcpy(str, "{");
     strcat(str, "\"heartbeat\"");
@@ -176,7 +175,25 @@ void mqttloop()
     client.publish(BME_TOPIC, str);
     delay(100);
 
-    heartbeat = 0;                              //Heartbeat publishes 0 to mark end of transmission
+    dtostrf(DOmgl, 1, 2, temp);
+    strcpy(str, "{");
+    strcat(str, "\"DO\"");
+    strcat(str, "\:");
+    strcat(str, temp);
+    strcat(str, "}");
+    client.publish(DO_TOPIC, str);
+    delay(100);
+
+    dtostrf(DO_Temp, 1, 2, temp);
+    strcpy(str, "{");
+    strcat(str, "\"DO_Temp\"");
+    strcat(str, "\:");
+    strcat(str, temp);
+    strcat(str, "}");
+    client.publish(DO_TOPIC, str);
+    delay(100);
+
+    heartbeat = 0; //Heartbeat publishes 0 to mark end of transmission
     dtostrf(heartbeat, 1, 2, temp);
     strcpy(str, "{");
     strcat(str, "\"heartbeat\"");
@@ -184,7 +201,6 @@ void mqttloop()
     strcat(str, temp);
     strcat(str, "}");
     client.publish(BME_TOPIC, str);
-    
 
     memset(str, 0, sizeof(str)); //Empties array
   }
