@@ -7,13 +7,21 @@ Main Idea Taken from Rui Santos - https://randomnerdtutorials.com/esp32-mqtt-pub
 
 #include "bme680.cpp"
 
-// Replace the next variables with your SSID/Password combination
-const char *ssid = "GloryAgro";
-const char *password = "Gloryart1!1";
+//WIFI
+#define SSID  "GloryAgro"
+#define PASS  "Gloryart1!1"
 
-// Add your MQTT Broker IP address, example:
-//const char* mqtt_server = "192.168.1.144";
-const char *mqtt_server = "192.168.0.29";
+//MQTT 
+#define MQTT_Broker_IP  "192.168.0.29"
+#define MQTT_Fallback_IP  "0.0.0.0"       //Implementation Required
+
+//Topic Declaration
+#define BME_TOPIC "TANK1/DATA/BME680"
+#define PT100_TOPIC "TANK1/DATA/TEMP"
+#define DO_TOPIC  "TANK1/DATA/LT105A"
+#define pH_TOPIC  "TANK1/DATA/pH"
+
+
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -26,11 +34,11 @@ void setup_wifi()
 {
   delay(10);
   // We start by connecting to a WiFi network
-  Serial.println();
+  //Serial.println();
   //Serial.print("Connecting to ");
-  Serial.println(ssid);
+  //Serial.println(ssid);
 
-  WiFi.begin(ssid, password);
+  WiFi.begin(SSID, PASS);
 
   while (WiFi.status() != WL_CONNECTED)
   {
@@ -89,12 +97,12 @@ void reconnect()
     {
       //Serial.println("connected");
       // Subscribe
-      client.subscribe("esp32/output");
+      // client.subscribe("esp32/output");
     }
     else
     {
       //Serial.print("failed, rc=");
-      Serial.print(client.state());
+      //Serial.print(client.state());
       //Serial.println(" try again in 5 seconds");
       // Wait 5 seconds before retrying
       delay(5000);
@@ -105,7 +113,7 @@ void reconnect()
 void mqtt_init()
 {
   setup_wifi();
-  client.setServer(mqtt_server, 1883);
+  client.setServer(MQTT_Broker_IP, 1883);
   client.setCallback(callback);
 }
 
@@ -132,7 +140,7 @@ void mqttloop()
     strcat(str, "\:");
     strcat(str, temp);
     strcat(str, "}");
-    client.publish("tank1/data/heartbeat", str);
+    client.publish(BME_TOPIC, str);
 
     dtostrf(air_temp, 1, 2, temp);
     strcpy(str, "{");
@@ -140,7 +148,7 @@ void mqttloop()
     strcat(str, "\:");
     strcat(str, temp);
     strcat(str, "}");
-    client.publish("tank1/data/bme680", str);
+    client.publish(BME_TOPIC, str);
 
     dtostrf(ambient_pressure, 1, 2, temp);
     strcpy(str, "{");
@@ -148,7 +156,7 @@ void mqttloop()
     strcat(str, "\:");
     strcat(str, temp);
     strcat(str, "}");
-    client.publish("tank1/data/bme680", str);
+    client.publish(BME_TOPIC, str);
     delay(100);
 
     dtostrf(ambient_humidity, 1, 2, temp);
@@ -157,7 +165,7 @@ void mqttloop()
     strcat(str, "\:");
     strcat(str, temp);
     strcat(str, "}");
-    client.publish("tank1/data/bme680", str);
+    client.publish(BME_TOPIC, str);
 
     dtostrf(ambient_altitude, 1, 2, temp);
     strcpy(str, "{");
@@ -165,7 +173,7 @@ void mqttloop()
     strcat(str, "\:");
     strcat(str, temp);
     strcat(str, "}");
-    client.publish("tank1/data/bme680", str);
+    client.publish(BME_TOPIC, str);
     delay(100);
 
     heartbeat = 0;                              //Heartbeat publishes 0 to mark end of transmission
@@ -175,11 +183,10 @@ void mqttloop()
     strcat(str, "\:");
     strcat(str, temp);
     strcat(str, "}");
-    client.publish("tank1/data/heartbeat", str);
+    client.publish(BME_TOPIC, str);
     
 
     memset(str, 0, sizeof(str)); //Empties array
   }
   //MQTT End
-  //Future addition - if server fails 5 times; go to redundancy
 }
