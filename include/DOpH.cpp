@@ -5,8 +5,10 @@
 #define O2_slaveID 0x0E
 #define O2_slaveID_DEC 14
 
-float DOmgl = 0.00;
-float DO_Temp = 0.00;
+
+
+float DOmgl;
+float DO_Temp;
 
 void DO()
 {
@@ -29,9 +31,9 @@ void DO()
     delay(100);
   }
 
-  //Serial.println("Data Acquired");
+  Serial.println("Data Acquired");
 
-  if (o2[0] != 14) //Slave ID Check
+  if (o2[0] != O2_slaveID_DEC) //Slave ID Check
   {
     // Serial.println("Slave ID not matched Transmission Halt!");
     //Serial.println(o2[0], HEX);
@@ -55,8 +57,8 @@ void DO()
 
     //   //Serial.write("DO Percentage: ");
     //   //Serial.println(Conv_DOPerc * 100);
-    //   //Serial.write("DO mg/L: ");
-    //   //Serial.println(DOmgl);
+     // Serial.write("DO mg/L: ");
+     // Serial.println(DOmgl);
     //   //Serial.println(DOmgl_Send);
     //   */
   }
@@ -65,7 +67,7 @@ void DO()
   modbusMasterTransmit(3, O2_slaveID, 0x03, 0x2E, 0x00, 0x00, 0x01);
   serial_flush_buffer(3); //Cleaning Response
   //delay(100);
-  //Serial.println("Stop Measurement");
+  //  Serial.println("Stop Measurement");
 }
 
 

@@ -18,10 +18,11 @@ Main Idea Taken from Rui Santos - https://randomnerdtutorials.com/esp32-mqtt-pub
 #define MQTT_Fallback_IP "0.0.0.0" //Implementation Required
 
 //Topic Declaration
-#define BME_TOPIC "TANK1/DATA/BME680"
-#define PT100_TOPIC "TANK1/DATA/TEMP"
-#define DO_TOPIC "TANK1/DATA/LT105A"
-#define pH_TOPIC "TANK1/DATA/pH"
+// #define BME_TOPIC "TANK1/DATA/BME680"
+// #define PT100_TOPIC "TANK1/DATA/TEMP"
+#define DO_TOPIC "TANK2/DATA/LT105A"
+#define HEARTBEAT_TOPIC "TANK2/DATA/HEART"
+// #define pH_TOPIC "TANK1/DATA/pH"
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -92,7 +93,7 @@ void reconnect()
   {
     //Serial.print("Attempting MQTT connection...");
     // Attempt to connect
-    if (client.connect("ESP32Client"))
+    if (client.connect("TANK1_Client"))
     {
       //Serial.println("connected");
       // Subscribe
@@ -135,45 +136,45 @@ void mqttloop()
     heartbeat = 1; //Heartbeat publishes 1 to mark start of transmission
     dtostrf(heartbeat, 1, 2, temp);
     strcpy(str, "{");
-    strcat(str, "\"heartbeat\"");
+    strcat(str, "\"HEARTBEAT\"");
     strcat(str, "\:");
     strcat(str, temp);
     strcat(str, "}");
-    client.publish(BME_TOPIC, str);
+    client.publish(HEARTBEAT_TOPIC, str);
 
-    dtostrf(air_temp, 1, 2, temp);
-    strcpy(str, "{");
-    strcat(str, "\"air_temp\"");
-    strcat(str, "\:");
-    strcat(str, temp);
-    strcat(str, "}");
-    client.publish(BME_TOPIC, str);
+    // dtostrf(air_temp, 1, 2, temp);
+    // strcpy(str, "{");
+    // strcat(str, "\"air_temp\"");
+    // strcat(str, "\:");
+    // strcat(str, temp);
+    // strcat(str, "}");
+    // client.publish(BME_TOPIC, str);
 
-    dtostrf(ambient_pressure, 1, 2, temp);
-    strcpy(str, "{");
-    strcat(str, "\"ambient_pressure\"");
-    strcat(str, "\:");
-    strcat(str, temp);
-    strcat(str, "}");
-    client.publish(BME_TOPIC, str);
-    delay(100);
+    // dtostrf(ambient_pressure, 1, 2, temp);
+    // strcpy(str, "{");
+    // strcat(str, "\"ambient_pressure\"");
+    // strcat(str, "\:");
+    // strcat(str, temp);
+    // strcat(str, "}");
+    // client.publish(BME_TOPIC, str);
+    // delay(100);
 
-    dtostrf(ambient_humidity, 1, 2, temp);
-    strcpy(str, "{");
-    strcat(str, "\"ambient_humidity\"");
-    strcat(str, "\:");
-    strcat(str, temp);
-    strcat(str, "}");
-    client.publish(BME_TOPIC, str);
+    // dtostrf(ambient_humidity, 1, 2, temp);
+    // strcpy(str, "{");
+    // strcat(str, "\"ambient_humidity\"");
+    // strcat(str, "\:");
+    // strcat(str, temp);
+    // strcat(str, "}");
+    // client.publish(BME_TOPIC, str);
 
-    dtostrf(ambient_altitude, 1, 2, temp);
-    strcpy(str, "{");
-    strcat(str, "\"ambient_altitude\"");
-    strcat(str, "\:");
-    strcat(str, temp);
-    strcat(str, "}");
-    client.publish(BME_TOPIC, str);
-    delay(100);
+    // dtostrf(ambient_altitude, 1, 2, temp);
+    // strcpy(str, "{");
+    // strcat(str, "\"ambient_altitude\"");
+    // strcat(str, "\:");
+    // strcat(str, temp);
+    // strcat(str, "}");
+    // client.publish(BME_TOPIC, str);
+    // delay(100);
 
     dtostrf(DOmgl, 1, 2, temp);
     strcpy(str, "{");
@@ -186,7 +187,7 @@ void mqttloop()
 
     dtostrf(DO_Temp, 1, 2, temp);
     strcpy(str, "{");
-    strcat(str, "\"DO_Temp\"");
+    strcat(str, "\"DO_TEMP\"");
     strcat(str, "\:");
     strcat(str, temp);
     strcat(str, "}");
@@ -196,11 +197,11 @@ void mqttloop()
     heartbeat = 0; //Heartbeat publishes 0 to mark end of transmission
     dtostrf(heartbeat, 1, 2, temp);
     strcpy(str, "{");
-    strcat(str, "\"heartbeat\"");
+    strcat(str, "\"HEARTBEAT\"");
     strcat(str, "\:");
     strcat(str, temp);
     strcat(str, "}");
-    client.publish(BME_TOPIC, str);
+    client.publish(HEARTBEAT_TOPIC, str);
 
     memset(str, 0, sizeof(str)); //Empties array
   }

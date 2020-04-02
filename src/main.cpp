@@ -25,24 +25,24 @@
 // TCS3200 Color Sensor
 
 // TCS230 or TCS3200 pins wiring to Arduino
-#define S0 32
-#define S1 33
-#define S2 25
-#define S3 26
-#define sensorOut 35
+// #define S0 32
+// #define S1 33
+// #define S2 25
+// #define S3 26
+// #define sensorOut 35
 
 // Stores frequency read by the photodiodes
-int redFrequency = 0;
-int greenFrequency = 0;
-int blueFrequency = 0;
+// int redFrequency = 0;
+// int greenFrequency = 0;
+// int blueFrequency = 0;
 
 // Global Variables for Temperature and DO mg/L for Optical DO Sensor
-uint16_t Temp_Send = 0;
-uint16_t DOmgl_Send = 0;
-uint16_t temp_transmit = 0;
-uint16_t DOmgl_transmit = 0;
+// uint16_t Temp_Send = 0;
+// uint16_t DOmgl_Send = 0;
+// uint16_t temp_transmit = 0;
+// uint16_t DOmgl_transmit = 0;
 
-void Core0code(void *pvParameters) //All other sensor and MQTT interface
+void Core0code(void *pvParameters) //Add Dual Core Capabilities; Dont use while using BLE or WIFI
 {
   for (;;)
   {
@@ -98,10 +98,10 @@ void setup()
   //Serial1.begin(9600, SERIAL_8N1, UART1_RX, UART1_TX);
   //Caution: Remove Pins before uploading firmware!!!!! // Shared with Flash
 
-  //Serial2.begin(9600, SERIAL_8N1, UART2_RX, UART2_TX);
+  Serial2.begin(9600,SERIAL_8N1, UART2_RX, UART2_TX);
 
-  bmeInit();   // Initialising BME680 Dependencies
-  mqtt_init(); //Initialising MQTT Dependencies
+ // bmeInit();   // Initialising BME680 Dependencies
+ mqtt_init(); //Initialising MQTT Dependencies
 
   // // TCS3200 Color Sensor Setup
   // // Setting the outputs
@@ -134,6 +134,7 @@ void loop() // All Modbus Operation
   // temp_transmit = dec_hex16(Temp_Send);
   // DOmgl_transmit = dec_hex16(DOmgl_Send);
   // //Modbus Master End
+  
   // //Modbus Slave Start
   // for (size_t i = 0; i <= 7; i++)
   // {
@@ -152,10 +153,15 @@ void loop() // All Modbus Operation
   // //Modbus Slave End
 
 
-  DO();       //Measuring Dissolved Oxygen
-  bmeRun();   //BME680 reading
+  
+  //bmeRun();   //BME680 reading
 
+ 
+  DO();       //Measuring Dissolved Oxygen
+
+  //All other code must be before mqqtloop();
   mqttloop(); //MQTT Start
+
 
   //Serial.println(millis()-now);   //Shows time to complete a full cycle in milli seconds
 }
