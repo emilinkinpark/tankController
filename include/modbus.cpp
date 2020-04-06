@@ -447,3 +447,35 @@ void modbusRead(uint8_t serialportnumber, char SlaveID, int datalength, int *buf
   }
   
 }
+
+void modbus_slave()
+{
+  // //Modbus Transmit to MOXA
+
+  // /* Listens to Request from MOXA
+  // * Matches the datalength
+  // * Matches the slaveID
+  // *
+  // */
+
+  // temp_transmit = dec_hex16(Temp_Send);
+  // DOmgl_transmit = dec_hex16(DOmgl_Send);
+  // //Modbus Master End
+  
+  // //Modbus Slave Start
+  // for (size_t i = 0; i <= 7; i++)
+  // {
+  //   incomingData[i] = Serial1.read();
+  // }
+
+  // if (incomingData[0] == 12)        //Matches Slave ID to Transmit Response Frame
+  // {
+  //   //Serial.println("Serial ID found");
+  //   modbusSlaveTransmit(2, 0x0C, 0x03, 0x04, temp_transmit >> 8, (uint8_t)temp_transmit, DOmgl_transmit >> 8, (uint8_t)DOmgl_transmit);
+  // }
+  // else
+  // {
+  //   ;;//Serial.println("Not Found");
+  // }
+  // //Modbus Slave End
+}

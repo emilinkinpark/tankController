@@ -11,6 +11,8 @@ Adafruit_BME680 bme; // I2C
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 
+boolean bme680_heartbeat = 1; // Device Check
+
 char air_temp = 0.00;
 float ambient_pressure = 0.00;
 float ambient_humidity = 0.00;
@@ -21,11 +23,12 @@ void bmeInit()
 
   while (!Serial)
     ;
-  Serial.println(F("BME680 test"));
+  //Serial.println(F("BME680 test"));
 
   if (!bme.begin(0x77))
   {
-    Serial.println("Could not find a valid BME680 sensor, check wiring!");
+    bme680_heartbeat = 0;
+    //Serial.println("Could not find a valid BME680 sensor, check wiring!");
     while (1)
       ;
   }
@@ -42,7 +45,8 @@ void bmeRun()
 {
   if (!bme.performReading())
   {
-    Serial.println("Failed to perform reading :(");
+    bme680_heartbeat = 0;
+    //Serial.println("Failed to perform reading :(");
   }
   air_temp = bme.temperature;
   ambient_pressure = bme.pressure / 100.0;

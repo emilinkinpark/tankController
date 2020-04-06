@@ -14,13 +14,14 @@ Main Idea Taken from Rui Santos - https://randomnerdtutorials.com/esp32-mqtt-pub
 #define PASS "Gloryart1!1"
 
 //MQTT
+#define Client_Name "Test"
 #define MQTT_Broker_IP "192.168.0.29"
 #define MQTT_Fallback_IP "0.0.0.0" //Implementation Required
 
 //Topic Declaration
-// #define BME_TOPIC "TANK1/DATA/BME680"
+#define BME_TOPIC "TANK1/DATA/BME680"
 // #define PT100_TOPIC "TANK1/DATA/TEMP"
-#define DO_TOPIC "TANK2/DATA/LT105A"
+//#define DO_TOPIC "TANK2/DATA/LT105A"
 #define HEARTBEAT_TOPIC "TANK2/DATA/HEART"
 // #define pH_TOPIC "TANK1/DATA/pH"
 
@@ -93,7 +94,7 @@ void reconnect()
   {
     //Serial.print("Attempting MQTT connection...");
     // Attempt to connect
-    if (client.connect("TANK1_Client"))
+    if (client.connect(Client_Name))
     {
       //Serial.println("connected");
       // Subscribe
@@ -142,57 +143,66 @@ void mqttloop()
     strcat(str, "}");
     client.publish(HEARTBEAT_TOPIC, str);
 
-    // dtostrf(air_temp, 1, 2, temp);
-    // strcpy(str, "{");
-    // strcat(str, "\"air_temp\"");
-    // strcat(str, "\:");
-    // strcat(str, temp);
-    // strcat(str, "}");
-    // client.publish(BME_TOPIC, str);
-
-    // dtostrf(ambient_pressure, 1, 2, temp);
-    // strcpy(str, "{");
-    // strcat(str, "\"ambient_pressure\"");
-    // strcat(str, "\:");
-    // strcat(str, temp);
-    // strcat(str, "}");
-    // client.publish(BME_TOPIC, str);
-    // delay(100);
-
-    // dtostrf(ambient_humidity, 1, 2, temp);
-    // strcpy(str, "{");
-    // strcat(str, "\"ambient_humidity\"");
-    // strcat(str, "\:");
-    // strcat(str, temp);
-    // strcat(str, "}");
-    // client.publish(BME_TOPIC, str);
-
-    // dtostrf(ambient_altitude, 1, 2, temp);
-    // strcpy(str, "{");
-    // strcat(str, "\"ambient_altitude\"");
-    // strcat(str, "\:");
-    // strcat(str, temp);
-    // strcat(str, "}");
-    // client.publish(BME_TOPIC, str);
-    // delay(100);
-
-    dtostrf(DOmgl, 1, 2, temp);
+    dtostrf(bme680_heartbeat, 1, 2, temp);
     strcpy(str, "{");
-    strcat(str, "\"DO\"");
+    strcat(str, "\"BME_HEART\"");
     strcat(str, "\:");
     strcat(str, temp);
     strcat(str, "}");
-    client.publish(DO_TOPIC, str);
+    client.publish(BME_TOPIC, str);
     delay(100);
 
-    dtostrf(DO_Temp, 1, 2, temp);
+    dtostrf(air_temp, 1, 2, temp);
     strcpy(str, "{");
-    strcat(str, "\"DO_TEMP\"");
+    strcat(str, "\"AIR_TEMP\"");
     strcat(str, "\:");
     strcat(str, temp);
     strcat(str, "}");
-    client.publish(DO_TOPIC, str);
+    client.publish(BME_TOPIC, str);
+
+    dtostrf(ambient_pressure, 1, 2, temp);
+    strcpy(str, "{");
+    strcat(str, "\"AMBIENT_PRESSURE\"");
+    strcat(str, "\:");
+    strcat(str, temp);
+    strcat(str, "}");
+    client.publish(BME_TOPIC, str);
     delay(100);
+
+    dtostrf(ambient_humidity, 1, 2, temp);
+    strcpy(str, "{");
+    strcat(str, "\"AMBIENT_HUMIDITY\"");
+    strcat(str, "\:");
+    strcat(str, temp);
+    strcat(str, "}");
+    client.publish(BME_TOPIC, str);
+
+    dtostrf(ambient_altitude, 1, 2, temp);
+    strcpy(str, "{");
+    strcat(str, "\"AMBIENT_ALTITUDE\"");
+    strcat(str, "\:");
+    strcat(str, temp);
+    strcat(str, "}");
+    client.publish(BME_TOPIC, str);
+    delay(100);
+
+    // dtostrf(DOmgl, 1, 2, temp);
+    // strcpy(str, "{");
+    // strcat(str, "\"DO\"");
+    // strcat(str, "\:");
+    // strcat(str, temp);
+    // strcat(str, "}");
+    // client.publish(DO_TOPIC, str);
+    // delay(100);
+
+    // dtostrf(DO_Temp, 1, 2, temp);
+    // strcpy(str, "{");
+    // strcat(str, "\"DO_TEMP\"");
+    // strcat(str, "\:");
+    // strcat(str, temp);
+    // strcat(str, "}");
+    // client.publish(DO_TOPIC, str);
+    // delay(100);
 
     heartbeat = 0; //Heartbeat publishes 0 to mark end of transmission
     dtostrf(heartbeat, 1, 2, temp);

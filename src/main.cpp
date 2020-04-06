@@ -98,11 +98,11 @@ void setup()
   //Serial1.begin(9600, SERIAL_8N1, UART1_RX, UART1_TX);
   //Caution: Remove Pins before uploading firmware!!!!! // Shared with Flash
 
-  Serial2.begin(9600,SERIAL_8N1, UART2_RX, UART2_TX);
+  Serial2.begin(9600, SERIAL_8N1, UART2_RX, UART2_TX);
 
- // bmeInit();   // Initialising BME680 Dependencies
- mqtt_init(); //Initialising MQTT Dependencies
+  mqtt_init(); //Initialising MQTT Dependencies Runs on Core 0;
 
+  bmeInit(); // Initialising BME680 Dependencies
   // // TCS3200 Color Sensor Setup
   // // Setting the outputs
   // pinMode(S0, OUTPUT);
@@ -122,46 +122,10 @@ void setup()
 void loop() // All Modbus Operation
 {
 
-  
-  // //Modbus Transmit to MOXA
-
-  // /* Listens to Request from MOXA
-  // * Matches the datalength
-  // * Matches the slaveID
-  // *
-  // */
-
-  // temp_transmit = dec_hex16(Temp_Send);
-  // DOmgl_transmit = dec_hex16(DOmgl_Send);
-  // //Modbus Master End
-  
-  // //Modbus Slave Start
-  // for (size_t i = 0; i <= 7; i++)
-  // {
-  //   incomingData[i] = Serial1.read();
-  // }
-
-  // if (incomingData[0] == 12)        //Matches Slave ID to Transmit Response Frame
-  // {
-  //   //Serial.println("Serial ID found");
-  //   modbusSlaveTransmit(2, 0x0C, 0x03, 0x04, temp_transmit >> 8, (uint8_t)temp_transmit, DOmgl_transmit >> 8, (uint8_t)DOmgl_transmit);
-  // }
-  // else
-  // {
-  //   ;;//Serial.println("Not Found");
-  // }
-  // //Modbus Slave End
-
-
-  
-  //bmeRun();   //BME680 reading
-
- 
-  DO();       //Measuring Dissolved Oxygen
-
-  //All other code must be before mqqtloop();
   mqttloop(); //MQTT Start
 
+  bmeRun(); //BME680 reading
+  //DO();       //Measuring Dissolved Oxygen
 
   //Serial.println(millis()-now);   //Shows time to complete a full cycle in milli seconds
 }
