@@ -22,7 +22,7 @@ Main Idea Taken from Rui Santos - https://randomnerdtutorials.com/esp32-mqtt-pub
 #define BME_TOPIC "TANK1/DATA/BME680"
 // #define PT100_TOPIC "TANK1/DATA/TEMP"
 //#define DO_TOPIC "TANK2/DATA/LT105A"
-#define HEARTBEAT_TOPIC "TANK2/DATA/HEART"
+#define HEARTBEAT_TOPIC "TANK1/DATA/HEART"
 // #define pH_TOPIC "TANK1/DATA/pH"
 
 WiFiClient espClient;
