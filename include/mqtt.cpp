@@ -14,7 +14,7 @@ Main Idea Taken from Rui Santos - https://randomnerdtutorials.com/esp32-mqtt-pub
 #define PASS "Gloryart1!1"
 
 //MQTT
-#define Client_Name "Test"
+#define Client_Name "TANK2"
 #define MQTT_Broker_IP "192.168.0.29"
 #define MQTT_Fallback_IP "0.0.0.0" //Implementation Required
 
@@ -92,6 +92,8 @@ void reconnect()
   // Loop until we're reconnected
   while (!client.connected())
   {
+    delay(10000);
+    ESP.restart();                                    // ESP32 resets if no connection found
     //Serial.print("Attempting MQTT connection...");
     // Attempt to connect
     if (client.connect(Client_Name))
