@@ -2,7 +2,7 @@
 
 The codes are licensed under GNU LESSER GENERAL PUBLIC LICENSE
 *   Copyright © 2007 Free Software Foundation, Inc. <https://fsf.org/>
-*   More on the lincense at <https://www.gnu.org/licenses/lgpl-3.0.en.html>
+*   More on the license at <https://www.gnu.org/licenses/lgpl-3.0.en.html>
 *   Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed.
 *   
 *   Acknowledgement: The project uses Arduino libraries.
