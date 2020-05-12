@@ -14,14 +14,14 @@ Main Idea Taken from Rui Santos - https://randomnerdtutorials.com/esp32-mqtt-pub
 #define PASS "Gloryart1!1"
 
 //MQTT
-#define Client_Name "TANK2"
+#define Client_Name "TANK1"
 #define MQTT_Broker_IP "192.168.0.29"
 #define MQTT_Fallback_IP "0.0.0.0" //Implementation Required
 
 //Topic Declaration
 #define BME_TOPIC "TANK1/DATA/BME680"
 // #define PT100_TOPIC "TANK1/DATA/TEMP"
-//#define DO_TOPIC "TANK2/DATA/LT105A"
+//#define DO_TOPIC "TANK1/DATA/LT105A"
 #define HEARTBEAT_TOPIC "TANK1/DATA/HEART"
 // #define pH_TOPIC "TANK1/DATA/pH"
 
@@ -53,12 +53,32 @@ void setup_wifi()
   Serial.println(WiFi.localIP());
 }
 
+float Subsribe_Sensor_Data(String &SubscribedData)               //Converts Subscribed MQTT Data to float value
+{
+  //Serial.println(messageTemp); // Working
+  const char *temp = SubscribedData.c_str();
+  /* Serial.println(temp);                 //Debugging */
+
+  if (char *ret = strstr(temp, "\"DO\":"))
+  {
+    float val = atof(&SubscribedData[6]); //Converts String to float
+   /*  Serial.print("Float is: ");           // Debugging
+    Serial.println(val);                  // Debugging */
+    return val;
+  }
+  else
+  {
+    // Do Nothing
+  }
+  
+}
+
 void callback(char *topic, byte *message, unsigned int length)
 {
   //Serial.print("Message arrived on topic: ");
-  Serial.print(topic);
+  //Serial.print(topic);
   //Serial.print(". Message: ");
-  String messageTemp;
+  /* String messageTemp;
 
   for (int i = 0; i < length; i++)
   {
@@ -71,21 +91,20 @@ void callback(char *topic, byte *message, unsigned int length)
 
   // If a message is received on the topic esp32/output, you check if the message is either "on" or "off".
   // Changes the output state according to the message
-  // if (String(topic) == "esp32/output")
-  // {
-  //   Serial.print("Changing output to ");
-  //   if (messageTemp == "on")
-  //   {
-  //     Serial.println("on");
-  //     digitalWrite(ledPin, HIGH);
-  //   }
-  //   else if (messageTemp == "off")
-  //   {
-  //     Serial.println("off");
-  //     digitalWrite(ledPin, LOW);
-  //   }
-  // }
+  if (String(topic) == "TANK2/DATA/LT105A")
+  {
+    float DO = Subsribe_Sensor_Data(messageTemp);
+    //Serial.print("Success: "); Serial.println(DO);   //Debugging 
+  }
+
+  else
+  {
+    Serial.println("No message");
+  } */
+
 }
+
+
 
 void reconnect()
 {
@@ -93,14 +112,14 @@ void reconnect()
   while (!client.connected())
   {
     delay(10000);
-    ESP.restart();                                    // ESP32 resets if no connection found
-    //Serial.print("Attempting MQTT connection...");
+    
+    Serial.print("Attempting MQTT connection...");
     // Attempt to connect
     if (client.connect(Client_Name))
     {
-      //Serial.println("connected");
+       Serial.println("connected");
       // Subscribe
-      // client.subscribe("esp32/output");
+      //client.subscribe("TANK2/DATA/LT105A"); // Subscribes to Topic
     }
     else
     {
@@ -109,6 +128,7 @@ void reconnect()
       //Serial.println(" try again in 5 seconds");
       // Wait 5 seconds before retrying
       delay(5000);
+      //ESP.restart();                                    // ESP32 resets if no connection found // Needs some thought on to this, resetting esp randomly will be bad;
     }
   }
 }
