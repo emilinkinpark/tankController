@@ -5,6 +5,8 @@ The codes are licensed under GNU LESSER GENERAL PUBLIC LICENSE
 *   More on the license at <https://www.gnu.org/licenses/lgpl-3.0.en.html>
 *   Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed.
 *   
+*   Glory Aquaculture Pvt. Ltd Bangladesh has complete rights to this firmware.
+*
 *   Acknowledgement: The project uses Arduino libraries.  
 *   The aim is to build a ESP32 based firmware which acquire all sensors:
     1) Optical DO X 1 (MODBUS)
