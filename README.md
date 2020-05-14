@@ -5,10 +5,11 @@ The codes are licensed under GNU LESSER GENERAL PUBLIC LICENSE
 *   More on the license at <https://www.gnu.org/licenses/lgpl-3.0.en.html>
 *   Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed.
 *   
+*   Glory Aquaculture Pvt. Ltd Bangladesh has complete rights to this firmware.
+*
 *   Acknowledgement: The project uses Arduino libraries.
 *    
-*   The purpose of this project is to create a decentralised or independent controller for Glory Aquaculture Pvt. Ltd's 
-*   Prawn Intensive Farming Project. 
-*   The MODBUSRTU communication protocol is implemented according to Modbus_over_serial_line_V1_02.pdf
-*   This program only reads data from multiple slave devices, performs necessary calculations and later sends to the MQTT broker.
+*   The aim of this firmware is to subscribe to MQTT broker and acquire necessary data to control the Blower (Motor) as per specified by       the system. 
+*   Statuses are reported back to MQTT broker as a part of system integration.
+*   
 *   ESP32 is used for it's versatility. 
